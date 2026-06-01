@@ -224,8 +224,14 @@ export default function EducationPage() {
             {tenunDaerah.map((item) => (
               <div
                 key={item.daerah}
-                className="bg-white rounded-2xl border border-amber-200/40 shadow-sm overflow-hidden hover:shadow-lg hover:border-amber-300/60 transition-all duration-300 group"
+                className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-2xl border border-amber-700/30 shadow-sm overflow-hidden hover:shadow-lg hover:border-amber-600/50 transition-all duration-300 group"
               >
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+                    backgroundSize: '30px 30px',
+                  }}
+                />
                 <div className="relative h-44 overflow-hidden">
                   <Image
                     src={item.image}
@@ -240,9 +246,9 @@ export default function EducationPage() {
                     <h3 className="text-white font-serif font-bold text-lg">{item.nama}</h3>
                   </div>
                 </div>
-                <div className="p-4 sm:p-5">
-                  <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
-                  <div className="mt-3 flex items-center gap-2 text-xs text-amber-700">
+                <div className="p-4 sm:p-5 relative z-10">
+                  <p className="text-amber-100/60 text-sm leading-relaxed">{item.desc}</p>
+                  <div className="mt-3 flex items-center gap-2 text-xs text-amber-400">
                     <Palette className="w-3.5 h-3.5" />
                     <span>{item.warna}</span>
                   </div>
@@ -281,18 +287,24 @@ export default function EducationPage() {
             {tahapTenun.map((tahap, index) => (
               <div
                 key={tahap.title}
-                className="bg-white rounded-2xl border border-amber-200/40 p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-amber-300/60 transition-all duration-300 text-center group"
+                className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-2xl border border-amber-700/30 p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-amber-600/50 transition-all duration-300 text-center group overflow-hidden"
               >
-                <div className="relative mb-4 inline-flex">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-50 border border-amber-200/60 flex items-center justify-center text-amber-700 group-hover:from-amber-200 group-hover:to-amber-100 transition-all duration-300">
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='25' height='25' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+                    backgroundSize: '25px 25px',
+                  }}
+                />
+                <div className="relative mb-4 inline-flex z-10">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-600 to-amber-700 border border-amber-500/30 flex items-center justify-center text-amber-100 group-hover:from-amber-500 group-hover:to-amber-600 transition-all duration-300">
                     <tahap.icon className="w-6 h-6" />
                   </div>
                   <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-amber-600 text-white text-[10px] font-bold flex items-center justify-center shadow">
                     {index + 1}
                   </div>
                 </div>
-                <h3 className="font-serif font-bold text-[#1a120b] text-sm mb-2">{tahap.title}</h3>
-                <p className="text-gray-500 text-xs leading-relaxed">{tahap.desc}</p>
+                <h3 className="relative z-10 font-serif font-bold text-amber-100 text-sm mb-2">{tahap.title}</h3>
+                <p className="relative z-10 text-amber-100/50 text-xs leading-relaxed">{tahap.desc}</p>
               </div>
             ))}
           </div>
@@ -344,14 +356,20 @@ export default function EducationPage() {
             {jenisBatik.map((b) => (
               <div
                 key={b.nama}
-                className="bg-white rounded-2xl border border-amber-200/40 p-5 shadow-sm hover:shadow-md hover:border-amber-300/60 transition-all duration-300"
+                className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-2xl border border-amber-700/30 p-5 shadow-sm hover:shadow-md hover:border-amber-600/50 transition-all duration-300 overflow-hidden"
               >
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center mb-3">
-                  <b.icon className="w-5 h-5 text-amber-700" />
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='25' height='25' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+                    backgroundSize: '25px 25px',
+                  }}
+                />
+                <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-amber-600 to-amber-700 flex items-center justify-center mb-3 z-10">
+                  <b.icon className="w-5 h-5 text-amber-100" />
                 </div>
-                <h3 className="font-serif font-bold text-[#1a120b] text-sm mb-1.5">{b.nama}</h3>
-                <p className="text-gray-500 text-xs leading-relaxed mb-3">{b.desc}</p>
-                <div className="flex items-center gap-1.5 text-[10px] text-amber-600 font-medium bg-amber-50 rounded-full px-3 py-1 inline-flex">
+                <h3 className="relative z-10 font-serif font-bold text-amber-100 text-sm mb-1.5">{b.nama}</h3>
+                <p className="relative z-10 text-amber-100/50 text-xs leading-relaxed mb-3">{b.desc}</p>
+                <div className="relative z-10 flex items-center gap-1.5 text-[10px] text-amber-400 font-medium bg-amber-800/30 rounded-full px-3 py-1 inline-flex">
                   <BookOpen className="w-3 h-3" />
                   {b.waktu}
                 </div>
@@ -389,15 +407,21 @@ export default function EducationPage() {
             {filosofiMotif.map((m) => (
               <div
                 key={m.title}
-                className="bg-white rounded-2xl border border-amber-200/40 p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-amber-300/60 transition-all duration-300"
+                className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-2xl border border-amber-700/30 p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-amber-600/50 transition-all duration-300 overflow-hidden"
               >
-                <div className="flex items-start gap-4">
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center shrink-0">
-                    <m.icon className="w-5 h-5 text-amber-700" />
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+                    backgroundSize: '30px 30px',
+                  }}
+                />
+                <div className="flex items-start gap-4 relative z-10">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-600 to-amber-700 flex items-center justify-center shrink-0">
+                    <m.icon className="w-5 h-5 text-amber-100" />
                   </div>
                   <div>
-                    <h3 className="font-serif font-bold text-[#1a120b] text-base">{m.title}</h3>
-                    <p className="text-gray-500 text-sm mt-1 leading-relaxed">{m.desc}</p>
+                    <h3 className="font-serif font-bold text-amber-100 text-base">{m.title}</h3>
+                    <p className="text-amber-100/50 text-sm mt-1 leading-relaxed">{m.desc}</p>
                   </div>
                 </div>
               </div>
@@ -477,8 +501,14 @@ export default function EducationPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-amber-200/40 p-6 sm:p-8 shadow-sm">
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-2xl border border-amber-700/30 p-6 sm:p-8 shadow-sm overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='35' height='35' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+                backgroundSize: '35px 35px',
+              }}
+            />
+            <ul className="relative grid grid-cols-1 sm:grid-cols-2 gap-4 z-10">
               {[
                 'Cuci dengan air dingin dan gunakan sampo khusus atau lerak alami agar warna tidak luntur.',
                 'Jangan direndam terlalu lama. Cukup 5–10 menit lalu bilas dengan air bersih.',
@@ -487,9 +517,9 @@ export default function EducationPage() {
                 'Simpan di tempat yang kering, beri kamper atau lavender alami untuk mencegah ngengat.',
                 'Jangan dilipat di bagian motif yang sama terus-menerus agar tidak meninggalkan bekas lipatan.',
               ].map((tip, idx) => (
-                <li key={idx} className="flex items-start gap-3 text-gray-600 text-sm">
-                  <div className="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center shrink-0 mt-0.5">
-                    <svg width="10" height="10" viewBox="0 0 16 16" fill="none" className="text-amber-600">
+                <li key={idx} className="flex items-start gap-3 text-amber-100/60 text-sm">
+                  <div className="w-5 h-5 rounded-full bg-amber-700/40 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg width="10" height="10" viewBox="0 0 16 16" fill="none" className="text-amber-400">
                       <path d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z" fill="currentColor" />
                     </svg>
                   </div>

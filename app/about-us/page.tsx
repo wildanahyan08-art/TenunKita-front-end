@@ -106,21 +106,33 @@ export default function AboutUsPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white rounded-2xl border border-amber-200/40 p-6 sm:p-7 shadow-sm">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center mb-4">
-                <Quote className="w-5 h-5 text-amber-600" />
+            <div className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-2xl border border-amber-700/30 p-6 sm:p-7 shadow-sm overflow-hidden">
+              <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+                  backgroundSize: '40px 40px',
+                }}
+              />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-600 to-amber-700 flex items-center justify-center mb-4 relative z-10 shadow-sm">
+                <Quote className="w-5 h-5 text-amber-100" />
               </div>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <p className="text-amber-100/80 text-sm leading-relaxed relative z-10">
                 TenunKita didirikan pada tahun 2024 dengan visi menjadi jembatan antara pengrajin
                 tenun tradisional Indonesia dan pasar global. Kami percaya bahwa setiap helai benang
                 tenun menyimpan cerita, nilai budaya, dan kearifan lokal yang patut dilestarikan.
               </p>
             </div>
-            <div className="bg-white rounded-2xl border border-amber-200/40 p-6 sm:p-7 shadow-sm">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center mb-4">
-                <Quote className="w-5 h-5 text-amber-600" />
+            <div className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-2xl border border-amber-700/30 p-6 sm:p-7 shadow-sm overflow-hidden">
+              <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+                  backgroundSize: '40px 40px',
+                }}
+              />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-600 to-amber-700 flex items-center justify-center mb-4 relative z-10 shadow-sm">
+                <Quote className="w-5 h-5 text-amber-100" />
               </div>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <p className="text-amber-100/80 text-sm leading-relaxed relative z-10">
                 Melalui platform ini, kami tidak hanya menjual produk, tetapi juga memperkenalkan
                 kekayaan motif tenun dari berbagai daerah, mendukung ekonomi kreatif, dan
                 memberdayakan komunitas pengrajin di seluruh Nusantara.
@@ -186,15 +198,21 @@ export default function AboutUsPage() {
             {values.map((item) => (
               <div
                 key={item.title}
-                className="bg-white rounded-2xl border border-amber-200/40 p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-amber-300/60 transition-all duration-300"
+                className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-2xl border border-amber-700/30 p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-amber-600/50 transition-all duration-300 overflow-hidden group"
               >
-                <div className="flex items-start gap-4">
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center shrink-0">
-                    <item.icon className="w-5 h-5 text-amber-700" />
+                <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+                    backgroundSize: '30px 30px',
+                  }}
+                />
+                <div className="flex items-start gap-4 relative z-10">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-600 to-amber-700 flex items-center justify-center shrink-0 shadow-sm">
+                    <item.icon className="w-5 h-5 text-amber-100" />
                   </div>
                   <div>
-                    <h3 className="font-serif font-bold text-[#1a120b] text-base">{item.title}</h3>
-                    <p className="text-gray-500 text-sm mt-1 leading-relaxed">{item.desc}</p>
+                    <h3 className="font-serif font-bold text-amber-100 text-base">{item.title}</h3>
+                    <p className="text-amber-100/60 text-sm mt-1 leading-relaxed">{item.desc}</p>
                   </div>
                 </div>
               </div>

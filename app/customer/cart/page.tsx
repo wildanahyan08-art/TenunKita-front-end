@@ -195,7 +195,15 @@ export default function CustomerCartPage() {
 
         {items.length === 0 ? (
           /* ─── EMPTY STATE ─── */
-          <div className="bg-white rounded-2xl border border-amber-200/40 shadow-sm p-16 text-center">
+          <div className="relative bg-gradient-to-br from-amber-50 to-white rounded-2xl border border-amber-300/50 shadow-sm p-16 text-center overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+                backgroundSize: '40px 40px',
+              }}
+            />
+            <div className="absolute top-6 right-6 w-16 h-16 border border-amber-300/20 rotate-45 rounded-xl" />
+            <div className="absolute bottom-6 left-6 w-12 h-12 border border-amber-300/20 rotate-12 rounded-xl" />
             <div className="w-20 h-20 mx-auto mb-5 bg-amber-50 rounded-full flex items-center justify-center border border-amber-200/60">
               <ShoppingBag className="w-8 h-8 text-amber-400" />
             </div>
@@ -235,10 +243,16 @@ export default function CustomerCartPage() {
                 {items.map((item) => (
                   <div
                     key={item.id}
-                    className={`bg-white rounded-2xl border border-amber-200/40 shadow-sm overflow-hidden transition-all duration-300 group ${
-                      updatingId === item.id ? 'opacity-60' : 'hover:shadow-md'
+                    className={`relative bg-gradient-to-br from-amber-50/80 to-white rounded-2xl border border-amber-300/50 shadow-sm overflow-hidden transition-all duration-300 group ${
+                      updatingId === item.id ? 'opacity-60' : 'hover:shadow-lg'
                     }`}
                   >
+                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                      style={{
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+                        backgroundSize: '30px 30px',
+                      }}
+                    />
                     <div className="flex flex-col sm:flex-row gap-6 p-5">
                       {/* Image */}
                       <div className="relative w-full sm:w-48 aspect-[4/3] sm:aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 shrink-0 border border-amber-100">
@@ -402,14 +416,14 @@ export default function CustomerCartPage() {
 
                 {/* Info badges */}
                 <div className="grid grid-cols-2 gap-3 mt-4">
-                  <div className="flex items-center gap-2.5 p-3 bg-white rounded-xl border border-amber-200/40 shadow-sm">
+                  <div className="flex items-center gap-2.5 p-3 bg-gradient-to-br from-amber-50/80 to-white rounded-xl border border-amber-300/50 shadow-sm">
                     <Truck className="w-4 h-4 text-amber-600 shrink-0" />
                     <div>
                       <p className="text-xs font-semibold text-[#1a120b]">Gratis Ongkir</p>
                       <p className="text-[10px] text-gray-400">Min. belanja Rp150rb</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2.5 p-3 bg-white rounded-xl border border-amber-200/40 shadow-sm">
+                  <div className="flex items-center gap-2.5 p-3 bg-gradient-to-br from-amber-50/80 to-white rounded-xl border border-amber-300/50 shadow-sm">
                     <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
                     <div>
                       <p className="text-xs font-semibold text-[#1a120b]">Produk Asli</p>
@@ -443,7 +457,13 @@ export default function CustomerCartPage() {
               {recommended.map((product) => (
                 <div key={product.id} className="group cursor-pointer">
                   <Link href={`/customer/products/${product.id}`}>
-                    <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white mb-3 shadow-sm border border-amber-200/40 hover:shadow-lg transition-all duration-300">
+                    <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-gradient-to-br from-amber-50/80 to-white mb-3 shadow-sm border border-amber-300/50 hover:shadow-lg transition-all duration-300">
+                      <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                        style={{
+                          backgroundImage: `url("data:image/svg+xml,%3Csvg width='25' height='25' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+                          backgroundSize: '25px 25px',
+                        }}
+                      />
                       {product.imageUrl ? (
                         <img
                           src={product.imageUrl}

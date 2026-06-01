@@ -14,7 +14,6 @@ import {
   ArrowLeft,
   ShieldCheck,
   Truck,
-  Store,
 } from 'lucide-react';
 import ProductCard from '@/components/product/ProductCard';
 import ReviewCard from '@/components/product/ReviewCard';
@@ -117,7 +116,13 @@ export default function ProductDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#faf6f0] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-[#f5efe8] via-[#faf6f0] to-[#f5efe8] flex items-center justify-center relative">
+        <div className="absolute inset-0 pointer-events-none opacity-[0.08]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='10' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='20' cy='20' r='12' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3C/svg%3E")`,
+            backgroundSize: '100px 100px',
+          }}
+        />
         <div className="text-center">
           <div className="relative w-24 h-24 mx-auto mb-8">
             <div className="absolute inset-0 border-2 border-amber-600/20 rotate-45 rounded-xl animate-pulse" />
@@ -137,7 +142,13 @@ export default function ProductDetailPage() {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-[#faf6f0] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-[#f5efe8] via-[#faf6f0] to-[#f5efe8] flex items-center justify-center relative">
+        <div className="absolute inset-0 pointer-events-none opacity-[0.08]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='10' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='20' cy='20' r='12' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3C/svg%3E")`,
+            backgroundSize: '100px 100px',
+          }}
+        />
         <div className="text-center">
           <Package className="w-16 h-16 text-amber-400 mx-auto mb-4" />
           <h2 className="font-serif font-bold text-2xl text-[#1a120b]">Produk tidak ditemukan</h2>
@@ -153,47 +164,47 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-[#faf6f0]">
-
-      {/* ─── HERO HEADER ─── */}
-      <div className="relative bg-[#1a0f08] overflow-hidden">
-        <div className="absolute inset-0 opacity-15"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='6' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='10' r='6' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3Ccircle cx='10' cy='30' r='6' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='30' r='6' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3Ccircle cx='20' cy='20' r='8' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3C/svg%3E")`,
-            backgroundSize: '120px 120px',
-          }}
-        />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
-          <div className="flex items-center gap-2 text-xs mb-4">
-            <Link href="/dashboard" className="text-amber-400/60 hover:text-amber-300 transition-colors">Beranda</Link>
-            <ChevronRight className="w-3 h-3 text-amber-600/40" />
-            <Link href="/customer/products" className="text-amber-400/60 hover:text-amber-300 transition-colors">Produk</Link>
-            <ChevronRight className="w-3 h-3 text-amber-600/40" />
-            <span className="text-amber-300 font-medium truncate max-w-[200px]">{product.name}</span>
-          </div>
-
+      {/* ─── HERO ─── */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#1a120b] via-[#2a1a0e] to-[#1a0f08]">
+        <div className="absolute inset-0 opacity-[0.04]">
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L37.5 22.5L60 30L37.5 37.5L30 60L22.5 37.5L0 30L22.5 22.5Z' fill='%23ffffff'/%3E%3C/svg%3E")`,
+              backgroundSize: '60px 60px',
+            }}
+          />
+        </div>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-20 sm:py-28 relative z-10">
           <div className="text-center">
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <div className="w-16 h-px bg-gradient-to-r from-transparent to-amber-600/50" />
-              <Store className="w-5 h-5 text-amber-600/70" />
-              <div className="w-16 h-px bg-gradient-to-l from-transparent to-amber-600/50" />
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="w-12 h-px bg-amber-600/60" />
+              <span className="text-amber-500 text-xs font-bold tracking-[0.25em] uppercase">Detail Produk</span>
+              <div className="w-12 h-px bg-amber-600/60" />
             </div>
-            <h1 className="text-3xl md:text-5xl font-serif font-bold text-amber-100 tracking-wide">
-              Detail Produk
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-white mb-4 leading-tight">
+              {product.name}
             </h1>
-            <p className="text-amber-400/60 font-serif italic text-sm md:text-base mt-2">
-              {product.category?.name || 'Koleksi TenunKita'}
-            </p>
-            <div className="flex items-center justify-center gap-4 mt-6">
-              <div className="w-8 h-8 border border-amber-700/30 rotate-45" />
-              <div className="w-2 h-2 bg-amber-600/50 rotate-45" />
-              <div className="w-8 h-8 border border-amber-700/30 rotate-45" />
-            </div>
+            {product.category && (
+              <p className="text-amber-100/70 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+                Kategori: {product.category.name}
+              </p>
+            )}
           </div>
         </div>
-        <div className="h-3 bg-gradient-to-b from-[#1a0f08] to-[#faf6f0]" />
-      </div>
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#faf6f0] to-transparent" />
+      </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 relative z-10">
+
+        {/* ─── BREADCRUMB ─── */}
+        <div className="flex items-center gap-2 text-xs text-gray-400 mb-6">
+          <Link href="/" className="hover:text-amber-600 transition-colors">Beranda</Link>
+          <ChevronRight className="w-3 h-3" />
+          <Link href="/customer/products" className="hover:text-amber-600 transition-colors">Produk</Link>
+          <ChevronRight className="w-3 h-3" />
+          <span className="text-amber-700 font-medium truncate max-w-[200px]">{product.name}</span>
+        </div>
 
         {/* ─── BACK LINK ─── */}
         <Link

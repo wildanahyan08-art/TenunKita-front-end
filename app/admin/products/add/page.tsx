@@ -24,8 +24,9 @@ export default function AddProductPage() {
     imageUrl: '',
     categoryId: '',
   });
-  const [imageSource, setImageSource] = useState<'url' | 'upload'>('url');
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [imageSource, setImageSource] = useState<'url' | 'upload'>('upload');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [processingImage, setProcessingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -83,11 +84,16 @@ export default function AddProductPage() {
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tenunkita-production.up.railway.app';
 
-    let imagePayload = '';
+    const formData = new FormData();
+    formData.append('name', form.name);
+    formData.append('description', form.description);
+    formData.append('price', form.price);
+    formData.append('stock', form.stock);
+    formData.append('categoryId', form.categoryId);
 
-    if (uploadedImage) {
-      imagePayload = uploadedImage;
-    } else if (form.imageUrl.trim()) {
+    if (imageSource === 'upload' && imageFile) {
+      formData.append('image', imageFile);
+    } else if (imageSource === 'url' && form.imageUrl.trim()) {
       setProcessingImage(true);
       try {
         const proxyRes = await fetch('/api/upload', {
@@ -99,7 +105,11 @@ export default function AddProductPage() {
         if (!proxyRes.ok) {
           throw new Error(proxyData.error || 'Gagal memproses gambar');
         }
-        imagePayload = proxyData.dataUrl;
+        const imgRes = await fetch(proxyData.dataUrl);
+        const blob = await imgRes.blob();
+        const ext = blob.type.split('/')[1] || 'jpg';
+        const file = new File([blob], `product-image.${ext}`, { type: blob.type });
+        formData.append('image', file);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Gagal mengunduh gambar');
         setSubmitting(false);
@@ -109,26 +119,13 @@ export default function AddProductPage() {
       setProcessingImage(false);
     }
 
-    const body: Record<string, unknown> = {
-      name: form.name,
-      description: form.description,
-      price: parseFloat(form.price),
-      stock: parseInt(form.stock, 10),
-      categoryId: parseInt(form.categoryId, 10),
-    };
-
-    if (imagePayload) {
-      body.imageUrl = imagePayload;
-    }
-
     try {
       const res = await fetch(`${API_URL}/products`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(body),
+        body: formData,
       });
 
       const data = await res.json();
@@ -383,7 +380,7 @@ export default function AddProductPage() {
                   type="url"
                   name="imageUrl"
                   value={form.imageUrl}
-                  onChange={(e) => { handleChange(e); setUploadedImage(null); }}
+                  onChange={(e) => { handleChange(e); setImageFile(null); setImagePreview(null); }}
                   placeholder="https://example.com/gambar.jpg"
                   className="w-full px-4 py-2.5 bg-white border border-amber-200/60 rounded-xl text-sm text-[#1a120b] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400 transition-all"
                 />
@@ -411,11 +408,11 @@ export default function AddProductPage() {
                         alert('Ukuran file maksimal 5MB');
                         return;
                       }
+                      setImageFile(file);
+                      setForm({ ...form, imageUrl: '' });
                       const reader = new FileReader();
                       reader.onload = (ev) => {
-                        const dataUrl = ev.target?.result as string;
-                        setUploadedImage(dataUrl);
-                        setForm({ ...form, imageUrl: '' });
+                        setImagePreview(ev.target?.result as string);
                       };
                       reader.readAsDataURL(file);
                     }}
@@ -428,12 +425,12 @@ export default function AddProductPage() {
             </div>
           </div>
 
-          {(uploadedImage || form.imageUrl) && (
+          {(imagePreview || form.imageUrl) && (
             <div className="border border-amber-200/40 rounded-xl p-4 bg-amber-50/30">
               <p className="text-xs font-semibold text-gray-500 mb-2">Pratinjau Gambar</p>
               <div className="relative w-32 h-32">
                 <img
-                  src={uploadedImage || form.imageUrl}
+                  src={imagePreview || form.imageUrl}
                   alt="Pratinjau"
                   className="w-full h-full object-cover rounded-lg border border-amber-200"
                   onError={(e) => {

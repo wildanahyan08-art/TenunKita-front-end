@@ -129,55 +129,57 @@ export default function CustomerProductsPage() {
 
   return (
     <div className="min-h-screen bg-[#faf6f0]">
-
-      {/* ─── HERO HEADER ─── */}
-      <div className="relative bg-[#1a0f08] overflow-hidden">
-        <div className="absolute inset-0 opacity-15"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='6' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='10' r='6' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3Ccircle cx='10' cy='30' r='6' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='30' r='6' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3Ccircle cx='20' cy='20' r='8' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3C/svg%3E")`,
-            backgroundSize: '120px 120px',
-          }}
-        />
-        <div className="absolute inset-0 opacity-[0.07]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
-            backgroundSize: '60px 60px',
-          }}
-        />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-xs mb-4">
-            <Link href="/dashboard" className="text-amber-400/60 hover:text-amber-300 transition-colors">Beranda</Link>
-            <ChevronRight className="w-3 h-3 text-amber-600/40" />
-            <span className="text-amber-300 font-medium">Produk</span>
-          </div>
-
+      {/* ─── HERO ─── */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#1a120b] via-[#2a1a0e] to-[#1a0f08] -mt-[95px]">
+        <div className="absolute inset-0 opacity-[0.04]">
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L37.5 22.5L60 30L37.5 37.5L30 60L22.5 37.5L0 30L22.5 22.5Z' fill='%23ffffff'/%3E%3C/svg%3E")`,
+              backgroundSize: '60px 60px',
+            }}
+          />
+        </div>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-20 sm:py-28 pt-[95px] sm:pt-[95px] relative z-10">
           <div className="text-center">
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <div className="w-16 h-px bg-gradient-to-r from-transparent to-amber-600/50" />
-              <Store className="w-5 h-5 text-amber-600/70" />
-              <div className="w-16 h-px bg-gradient-to-l from-transparent to-amber-600/50" />
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="w-12 h-px bg-amber-600/60" />
+              <span className="text-amber-500 text-xs font-bold tracking-[0.25em] uppercase">Koleksi Produk</span>
+              <div className="w-12 h-px bg-amber-600/60" />
             </div>
-            <h1 className="text-3xl md:text-5xl font-serif font-bold text-amber-100 tracking-wide">
-              Koleksi Produk
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-white mb-4 leading-tight">
+              Jelajahi{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-300">
+                Koleksi Tenun
+              </span>{' '}
+              Nusantara
             </h1>
-            <p className="text-amber-400/60 font-serif italic text-sm md:text-base mt-2">
-              Temukan kain tenun tradisional Nusantara
+            <p className="text-amber-100/70 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+              Temukan kain tenun tradisional dari pengrajin berbakat di seluruh Indonesia,
+              dari Sabang sampai Merauke.
             </p>
-            <div className="flex items-center justify-center gap-4 mt-6">
-              <div className="w-8 h-8 border border-amber-700/30 rotate-45" />
-              <div className="w-2 h-2 bg-amber-600/50 rotate-45" />
-              <div className="w-8 h-8 border border-amber-700/30 rotate-45" />
-            </div>
           </div>
         </div>
-        <div className="h-3 bg-gradient-to-b from-[#1a0f08] to-[#faf6f0]" />
-      </div>
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#faf6f0] to-transparent" />
+      </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-10">
+
+        {/* ─── BREADCRUMB ─── */}
+        <div className="flex items-center gap-2 text-xs text-gray-400 mb-6">
+          <Link href="/" className="hover:text-amber-600 transition-colors">Beranda</Link>
+          <ChevronRight className="w-3 h-3" />
+          <span className="text-amber-700 font-medium">Produk</span>
+        </div>
 
         {/* ─── SEARCH & FILTER BAR ─── */}
-        <div className="bg-white rounded-2xl border border-amber-200/40 shadow-sm p-4 md:p-6 mb-6">
+        <div className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-2xl border border-amber-700/30 shadow-sm px-4 md:px-6 py-3 md:py-4 mb-6 overflow-hidden">
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+              backgroundSize: '30px 30px',
+            }}
+          />
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-400" />
@@ -186,7 +188,7 @@ export default function CustomerProductsPage() {
                 placeholder="Cari produk..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-amber-50/50 border border-amber-200/60 rounded-xl text-sm text-[#1a120b] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400 transition-all"
+                className="w-full pl-10 pr-4 py-2.5 bg-amber-900/20 border border-amber-700/40 rounded-xl text-sm text-amber-100 placeholder:text-amber-400/40 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all"
               />
             </div>
             <div className="flex gap-2">
@@ -194,7 +196,7 @@ export default function CustomerProductsPage() {
                 <select
                   value={sort}
                   onChange={(e) => setSort(e.target.value)}
-                  className="px-4 py-2.5 bg-amber-50/50 border border-amber-200/60 rounded-xl text-sm text-[#1a120b] focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400 transition-all appearance-none cursor-pointer pr-8"
+                  className="px-4 py-2.5 bg-amber-900/20 border border-amber-700/40 rounded-xl text-sm text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all appearance-none cursor-pointer pr-8"
                 >
                   <option value="terbaru">Terbaru</option>
                   <option value="termurah">Termurah</option>
@@ -221,7 +223,7 @@ export default function CustomerProductsPage() {
           </div>
 
           {/* Category chips */}
-          <div className="flex items-center gap-2 mt-4 pt-4 border-t border-amber-100 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-2 mt-4 pt-4 border-t border-amber-800/30 overflow-x-auto no-scrollbar">
             {categories.map((cat) => (
               <button
                 key={cat.slug}
@@ -229,7 +231,7 @@ export default function CustomerProductsPage() {
                 className={`whitespace-nowrap px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
                   activeCategory === cat.slug
                     ? 'bg-amber-700 text-white border-amber-700 shadow-sm'
-                    : 'bg-white text-gray-600 border-amber-200/60 hover:border-amber-400 hover:text-amber-700'
+                    : 'bg-amber-900/20 text-amber-100/60 border-amber-700/40 hover:border-amber-500 hover:text-amber-200'
                 }`}
               >
                 {cat.name}
@@ -247,8 +249,8 @@ export default function CustomerProductsPage() {
             <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center">
               <Store className="w-3 h-3 text-amber-700" />
             </div>
-            <p className="text-sm text-gray-500">
-              Menampilkan <span className="font-semibold text-[#1a120b]">{filtered.length}</span> produk
+            <p className="text-sm text-amber-100/50">
+              Menampilkan <span className="font-semibold text-amber-200">{filtered.length}</span> produk
               {activeCategory && (
                 <span className="text-amber-600"> — {categories.find(c => c.slug === activeCategory)?.name || activeCategory}</span>
               )}
@@ -269,12 +271,18 @@ export default function CustomerProductsPage() {
 
         {/* ─── PRODUCT GRID ─── */}
         {filtered.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-amber-200/40 shadow-sm p-16 text-center">
-            <div className="w-20 h-20 mx-auto mb-5 bg-amber-50 rounded-full flex items-center justify-center border border-amber-200/60">
+          <div className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-2xl border border-amber-700/30 shadow-sm p-16 text-center overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='35' height='35' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+                backgroundSize: '35px 35px',
+              }}
+            />
+            <div className="w-20 h-20 mx-auto mb-5 bg-amber-800/30 rounded-full flex items-center justify-center border border-amber-700/40">
               <Package className="w-8 h-8 text-amber-400" />
             </div>
-            <h3 className="font-serif font-bold text-xl text-[#1a120b] mb-1">Produk tidak ditemukan</h3>
-            <p className="text-gray-500 text-sm">Coba gunakan kata kunci atau filter lain</p>
+            <h3 className="font-serif font-bold text-xl text-amber-100 mb-1">Produk tidak ditemukan</h3>
+            <p className="text-amber-100/50 text-sm">Coba gunakan kata kunci atau filter lain</p>
             <button
               onClick={() => { setSearch(''); setActiveCategory(''); setSort('terbaru'); }}
               className="mt-6 px-6 py-2.5 bg-amber-700 hover:bg-amber-600 text-white rounded-xl text-sm font-medium transition-all shadow-sm"

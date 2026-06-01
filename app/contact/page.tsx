@@ -1,9 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ChevronRight, Mail, MapPin, Phone, Send, Clock } from 'lucide-react';
-import { SectionHeading } from '@/components/ui/SectionHeading';
-import { BatikBorder } from '@/components/ui/BatikBorder';
+import { ChevronRight, Mail, MapPin, Phone, Send, Clock, Camera, Globe, Music2, Play } from 'lucide-react';
 
 const contactInfo = [
   {
@@ -28,6 +26,13 @@ const contactInfo = [
     title: 'Jam Operasional',
     content: 'Senin - Jumat: 08.00 - 17.00 WIB\nSabtu: 08.00 - 14.00 WIB',
   },
+];
+
+const socials = [
+  { icon: Camera, label: 'Instagram', color: 'hover:bg-pink-600' },
+  { icon: Globe, label: 'Facebook', color: 'hover:bg-blue-600' },
+  { icon: Music2, label: 'TikTok', color: 'hover:bg-black' },
+  { icon: Play, label: 'YouTube', color: 'hover:bg-red-600' },
 ];
 
 export default function ContactPage() {
@@ -73,107 +78,152 @@ export default function ContactPage() {
           <span className="text-amber-700 font-medium">Kontak</span>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
-          {/* ─── CONTACT FORM ─── */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 items-start">
+
+          {/* ─── LEFT: FORM ─── */}
           <div className="lg:col-span-3">
-            <SectionHeading label="Kirim Pesan" title="Ada yang bisa kami bantu?" subtitle="Isi form di bawah ini dan tim kami akan merespon secepatnya." />
-
-            <form className="space-y-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-xs font-bold text-[#1a120b] uppercase tracking-[0.1em] mb-1.5">Nama Lengkap</label>
-                  <input
-                    type="text"
-                    placeholder="Masukkan nama Anda"
-                    className="w-full px-4 py-3 bg-white border border-amber-200/60 rounded-xl text-sm text-[#1a120b] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400 transition-all"
-                  />
+            <div className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-3xl border border-amber-700/30 p-6 sm:p-8 shadow-xl overflow-hidden">
+              <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='35' height='35' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+                  backgroundSize: '35px 35px',
+                }}
+              />
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-8 h-px bg-amber-600/40" />
+                  <span className="text-amber-500 text-xs font-bold tracking-[0.25em] uppercase">Kirim Pesan</span>
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-[#1a120b] uppercase tracking-[0.1em] mb-1.5">Email</label>
-                  <input
-                    type="email"
-                    placeholder="Masukkan email Anda"
-                    className="w-full px-4 py-3 bg-white border border-amber-200/60 rounded-xl text-sm text-[#1a120b] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400 transition-all"
-                  />
-                </div>
-              </div>
+                <h2 className="text-2xl md:text-3xl font-serif font-bold text-amber-100 mb-1">Ada yang bisa kami bantu?</h2>
+                <p className="text-amber-100/50 text-sm mb-6">Isi form di bawah ini dan tim kami akan merespon secepatnya.</p>
 
-              <div>
-                <label className="block text-xs font-bold text-[#1a120b] uppercase tracking-[0.1em] mb-1.5">Subjek</label>
-                <input
-                  type="text"
-                  placeholder="Masukkan subjek pesan"
-                  className="w-full px-4 py-3 bg-white border border-amber-200/60 rounded-xl text-sm text-[#1a120b] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400 transition-all"
-                />
-              </div>
+                <form className="space-y-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-xs font-bold text-amber-400 uppercase tracking-[0.1em] mb-1.5">Nama Lengkap</label>
+                      <input
+                        type="text"
+                        placeholder="Masukkan nama Anda"
+                        className="w-full px-4 py-3 bg-amber-900/20 border border-amber-700/40 rounded-xl text-sm text-amber-100 placeholder-amber-400/40 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-amber-400 uppercase tracking-[0.1em] mb-1.5">Email</label>
+                      <input
+                        type="email"
+                        placeholder="Masukkan email Anda"
+                        className="w-full px-4 py-3 bg-amber-900/20 border border-amber-700/40 rounded-xl text-sm text-amber-100 placeholder-amber-400/40 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all"
+                      />
+                    </div>
+                  </div>
 
-              <div>
-                <label className="block text-xs font-bold text-[#1a120b] uppercase tracking-[0.1em] mb-1.5">Pesan</label>
-                <textarea
-                  rows={5}
-                  placeholder="Tulis pesan Anda di sini..."
-                  className="w-full px-4 py-3 bg-white border border-amber-200/60 rounded-xl text-sm text-[#1a120b] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400 transition-all resize-none"
-                />
-              </div>
+                  <div>
+                    <label className="block text-xs font-bold text-amber-400 uppercase tracking-[0.1em] mb-1.5">Subjek</label>
+                    <input
+                      type="text"
+                      placeholder="Masukkan subjek pesan"
+                      className="w-full px-4 py-3 bg-amber-900/20 border border-amber-700/40 rounded-xl text-sm text-amber-100 placeholder-amber-400/40 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all"
+                    />
+                  </div>
 
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-amber-700 hover:bg-amber-600 text-white font-medium rounded-xl transition-all shadow-md hover:shadow-lg"
-              >
-                <Send className="w-4 h-4" /> Kirim Pesan
-              </button>
-            </form>
+                  <div>
+                    <label className="block text-xs font-bold text-amber-400 uppercase tracking-[0.1em] mb-1.5">Pesan</label>
+                    <textarea
+                      rows={5}
+                      placeholder="Tulis pesan Anda di sini..."
+                      className="w-full px-4 py-3 bg-amber-900/20 border border-amber-700/40 rounded-xl text-sm text-amber-100 placeholder-amber-400/40 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all resize-none"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-amber-700 hover:bg-amber-600 text-white font-medium rounded-xl transition-all shadow-md hover:shadow-lg"
+                  >
+                    <Send className="w-4 h-4" /> Kirim Pesan
+                  </button>
+                </form>
+              </div>
+            </div>
           </div>
 
-          {/* ─── CONTACT INFO ─── */}
-          <div className="lg:col-span-2">
-            <SectionHeading label="Informasi" title="Kontak Kami" />
+          {/* ─── RIGHT: CONTACT INFO ─── */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-3xl border border-amber-700/30 p-6 sm:p-7 shadow-xl overflow-hidden">
+              <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+                  backgroundSize: '30px 30px',
+                }}
+              />
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-px bg-amber-600/40" />
+                  <span className="text-amber-500 text-xs font-bold tracking-[0.25em] uppercase">Informasi</span>
+                </div>
+                <h2 className="text-xl font-serif font-bold text-amber-100 mb-5">Kontak Kami</h2>
 
-            <div className="space-y-4">
-              {contactInfo.map((item) => {
-                const Icon = item.icon;
-                const Card = item.href ? 'a' : 'div';
-                return (
-                  <Card
-                    key={item.title}
-                    {...(item.href ? { href: item.href } : {})}
-                    className={`bg-white rounded-2xl border border-amber-200/40 p-5 hover:shadow-md hover:border-amber-300/60 transition-all duration-300 ${
-                      item.href ? 'block no-underline cursor-pointer' : ''
-                    }`}
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center shrink-0">
-                        <Icon className="w-5 h-5 text-amber-700" />
-                      </div>
-                      <div className="min-w-0">
-                        <h3 className="font-serif font-bold text-[#1a120b] text-sm">{item.title}</h3>
-                        <p className="text-gray-500 text-sm mt-0.5 whitespace-pre-line">{item.content}</p>
-                      </div>
-                    </div>
-                  </Card>
-                );
-              })}
+                <div className="space-y-4">
+                  {contactInfo.map((item) => {
+                    const Icon = item.icon;
+                    const Card = item.href ? 'a' : 'div';
+                    return (
+                      <Card
+                        key={item.title}
+                        {...(item.href ? { href: item.href } : {})}
+                        className={`flex items-start gap-4 p-4 rounded-2xl bg-amber-900/20 border border-amber-700/30 hover:bg-amber-800/30 hover:border-amber-600/50 transition-all duration-300 ${
+                          item.href ? 'block no-underline cursor-pointer' : ''
+                        }`}
+                      >
+                        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-600 to-amber-700 flex items-center justify-center shrink-0 shadow-sm">
+                          <Icon className="w-5 h-5 text-amber-100" />
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="font-serif font-bold text-amber-100 text-sm">{item.title}</h3>
+                          <p className="text-amber-100/50 text-sm mt-0.5 whitespace-pre-line">{item.content}</p>
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
 
             {/* ─── SOCIAL ─── */}
-            <div className="mt-6 bg-white rounded-2xl border border-amber-200/40 p-5">
-              <h3 className="font-serif font-bold text-[#1a120b] text-sm mb-3">Ikuti Kami</h3>
-              <div className="flex gap-3">
-                {['Instagram', 'Facebook', 'TikTok', 'YouTube'].map((platform) => (
-                  <a
-                    key={platform}
-                    href="#"
-                    className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200/60 flex items-center justify-center text-amber-700 hover:from-amber-100 hover:to-amber-200 hover:scale-105 transition-all duration-300 text-[10px] font-bold uppercase tracking-tight"
-                  >
-                    {platform.charAt(0)}
-                  </a>
-                ))}
+            <div className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-3xl border border-amber-700/30 p-6 sm:p-7 shadow-xl overflow-hidden">
+              <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='25' height='25' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+                  backgroundSize: '25px 25px',
+                }}
+              />
+              <div className="relative z-10">
+                <h3 className="font-serif font-bold text-amber-100 text-sm mb-3">Ikuti Kami</h3>
+                <div className="flex gap-3">
+                  {socials.map((s) => (
+                    <a
+                      key={s.label}
+                      href="#"
+                      className={`w-10 h-10 rounded-xl bg-amber-700/40 border border-amber-600/30 flex items-center justify-center text-amber-300 ${s.color} hover:border-transparent hover:text-white hover:scale-105 transition-all duration-300`}
+                      title={s.label}
+                    >
+                      <s.icon className="w-4 h-4" />
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
+
         </div>
 
-        <BatikBorder />
+        {/* ─── BATIK DIVIDER ─── */}
+        <div className="flex items-center gap-3 my-12">
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent to-amber-600/40" />
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-amber-600/60 shrink-0">
+            <path d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z" fill="currentColor"/>
+          </svg>
+          <div className="flex-1 h-px bg-gradient-to-l from-transparent to-amber-600/40" />
+        </div>
 
         {/* ─── CTA ─── */}
         <section className="mt-16 mb-8">
@@ -215,7 +265,13 @@ export default function ContactPage() {
 
         {/* ─── FOOTER ─── */}
         <div className="mt-8 text-center">
-          <BatikBorder />
+          <div className="flex items-center gap-3 my-2">
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent to-amber-600/40" />
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-amber-600/60 shrink-0">
+              <path d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z" fill="currentColor"/>
+            </svg>
+            <div className="flex-1 h-px bg-gradient-to-l from-transparent to-amber-600/40" />
+          </div>
           <p className="text-gray-400 text-[11px] mt-4 tracking-wider">
             TenunKita — Warisan Budaya Nusantara
           </p>

@@ -253,7 +253,19 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="w-full bg-[#faf6f0] min-h-screen">
+    <div className="w-full bg-gradient-to-b from-[#f5efe8] via-[#faf6f0] to-[#f5efe8] min-h-screen relative">
+      <div className="absolute inset-0 pointer-events-none opacity-[0.08]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='10' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='20' cy='20' r='12' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3C/svg%3E")`,
+          backgroundSize: '100px 100px',
+        }}
+      />
+      <div className="absolute inset-0 pointer-events-none opacity-[0.05]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='50' height='50' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23b8863c'/%3E%3C/svg%3E")`,
+          backgroundSize: '70px 70px',
+        }}
+      />
       {/* ─── HERO ─── */}
       <section className="relative h-[500px] md:h-[760px] overflow-hidden">
         {heroSlides.map((slide, index) => (
@@ -377,18 +389,25 @@ export default function LandingPage() {
                 transition={{ duration: 0.5, delay: i * 0.15 }}
                 className="group relative"
               >
-                <div className="relative bg-white rounded-2xl p-7 text-center border border-amber-200/60 h-full overflow-hidden transition-all duration-500 hover:border-amber-400/60 hover:shadow-xl hover:-translate-y-2">
+                <div className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-2xl p-7 text-center border border-amber-700/30 h-full overflow-hidden transition-all duration-500 hover:border-amber-600/50 hover:shadow-xl hover:-translate-y-2">
+                  <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
+                    style={{
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg width='35' height='35' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+                      backgroundSize: '35px 35px',
+                    }}
+                  />
+
                   {/* Hover top bar */}
-                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-600 via-amber-400 to-amber-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-600 via-amber-400 to-amber-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 relative z-10" />
 
                   {/* Corner decorations */}
-                  <div className="absolute top-3 left-3 w-6 h-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  <div className="absolute top-3 left-3 w-6 h-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10">
                     <svg
                       width="20"
                       height="20"
                       viewBox="0 0 16 16"
                       fill="none"
-                      className="text-amber-300/60"
+                      className="text-amber-500/60"
                     >
                       <path
                         d="M0 0L4 2L8 0L12 2L16 0V4L14 8L16 12L14 16H12L8 14L4 16H0V12L2 8L0 4V0Z"
@@ -396,13 +415,13 @@ export default function LandingPage() {
                       />
                     </svg>
                   </div>
-                  <div className="absolute top-3 right-3 w-6 h-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rotate-90">
+                  <div className="absolute top-3 right-3 w-6 h-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rotate-90 z-10">
                     <svg
                       width="20"
                       height="20"
                       viewBox="0 0 16 16"
                       fill="none"
-                      className="text-amber-300/60"
+                      className="text-amber-500/60"
                     >
                       <path
                         d="M0 0L4 2L8 0L12 2L16 0V4L14 8L16 12L14 16H12L8 14L4 16H0V12L2 8L0 4V0Z"
@@ -412,37 +431,37 @@ export default function LandingPage() {
                   </div>
 
                   {/* Icon */}
-                  <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-amber-50 to-white border-2 border-amber-200/50 flex items-center justify-center text-amber-700 shadow-sm group-hover:shadow-lg group-hover:scale-110 group-hover:border-amber-300/70 transition-all duration-400 relative">
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-500/0 to-amber-500/0 group-hover:from-amber-500/10 group-hover:to-amber-600/5 transition-all duration-500" />
+                  <div className="relative w-16 h-16 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-amber-600 to-amber-700 border-2 border-amber-500/30 flex items-center justify-center text-amber-100 shadow-sm group-hover:shadow-lg group-hover:scale-110 group-hover:border-amber-400/50 transition-all duration-400 z-10">
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-500/0 to-amber-500/0 group-hover:from-amber-400/20 group-hover:to-amber-500/10 transition-all duration-500" />
                     <span className="relative z-10 group-hover:rotate-[-8deg] transition-transform duration-400">
                       {item.icon}
                     </span>
                   </div>
 
                   {/* Content */}
-                  <h3 className="font-serif font-bold text-[#1a120b] text-lg mb-2.5 group-hover:text-amber-800 transition-colors duration-300">
+                  <h3 className="relative z-10 font-serif font-bold text-amber-100 text-lg mb-2.5 group-hover:text-amber-200 transition-colors duration-300">
                     {item.title}
                   </h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">
+                  <p className="relative z-10 text-amber-100/60 text-sm leading-relaxed">
                     {item.desc}
                   </p>
 
                   {/* Bottom decoration */}
-                  <div className="mt-5 flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-500">
-                    <div className="w-8 h-px bg-amber-300/60" />
+                  <div className="relative z-10 mt-5 flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-500">
+                    <div className="w-8 h-px bg-amber-500/40" />
                     <svg
                       width="10"
                       height="10"
                       viewBox="0 0 16 16"
                       fill="none"
-                      className="text-amber-400/80"
+                      className="text-amber-500/60"
                     >
                       <path
                         d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z"
                         fill="currentColor"
                       />
                     </svg>
-                    <div className="w-8 h-px bg-amber-300/60" />
+                    <div className="w-8 h-px bg-amber-500/40" />
                   </div>
                 </div>
               </motion.div>
@@ -506,7 +525,7 @@ export default function LandingPage() {
             <div className="w-full md:w-1/2">
               <div className="relative group">
                 <div className="absolute -inset-2 bg-gradient-to-br from-amber-200/60 via-amber-100/40 to-amber-200/60 rounded-2xl blur-sm group-hover:blur transition-all duration-500" />
-                <div className="relative overflow-hidden rounded-xl border border-amber-200/60 bg-white shadow-lg">
+                <div className="relative overflow-hidden rounded-xl border border-amber-700/30 bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] shadow-lg">
                   <Image
                     src="/sertifikat.png"
                     alt="Sertifikat Keaslian TenunKita"
@@ -518,7 +537,7 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="w-full md:w-1/2 space-y-5">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 border border-amber-200/60 rounded-full">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-700/30 border border-amber-600/40 rounded-full">
                 <svg
                   width="12"
                   height="12"
@@ -538,7 +557,7 @@ export default function LandingPage() {
               <h3 className="text-2xl font-serif font-bold text-[#1a120b]">
                 Jaminan Produk Orisinil
               </h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <p className="text-gray-500 text-sm leading-relaxed">
                 Setiap produk yang dibeli di TenunKita dilengkapi dengan
                 sertifikat keaslian resmi dari pengrajin. Sertifikat ini
                 menjamin bahwa kain yang Anda terima adalah hasil karya asli
