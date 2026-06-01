@@ -255,7 +255,7 @@ export default function LandingPage() {
   return (
     <div className="w-full bg-[#faf6f0] min-h-screen">
       {/* ─── HERO ─── */}
-      <section className="relative h-[640px] md:h-[760px] overflow-hidden">
+      <section className="relative h-[500px] md:h-[760px] overflow-hidden">
         {heroSlides.map((slide, index) => (
           <div
             key={index}
