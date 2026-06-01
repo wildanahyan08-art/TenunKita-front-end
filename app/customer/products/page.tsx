@@ -1,0 +1,317 @@
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Search, ShoppingCart, ChevronRight, Package, Store } from 'lucide-react';
+import ProductCard from '@/components/product/ProductCard';
+import { api } from '@/lib/api';
+import type { ProductItem } from '@/lib/api';
+
+const BatikDivider = () => (
+  <div className="flex items-center gap-3">
+    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-300/60 to-transparent" />
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" className="text-amber-500/50 shrink-0">
+      <path d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z" fill="currentColor"/>
+    </svg>
+    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-300/60 to-transparent" />
+  </div>
+);
+
+const categories = [
+  { name: 'Semua', slug: '' },
+  { name: 'Tenun Ikat', slug: 'tenun-ikat' },
+  { name: 'Batik Tulis', slug: 'batik-tulis' },
+  { name: 'Songket', slug: 'songket' },
+  { name: 'Anyaman', slug: 'anyaman' },
+];
+
+export default function CustomerProductsPage() {
+  const router = useRouter();
+  const [products, setProducts] = useState<ProductItem[]>([]);
+  const [filtered, setFiltered] = useState<ProductItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState('terbaru');
+  const [showFilters, setShowFilters] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+  const [activeCategory, setActiveCategory] = useState('');
+
+  const fetchProducts = useCallback(async () => {
+    try {
+      const res = await api.getProducts();
+      const data = Array.isArray(res) ? res : Array.isArray(res.data) ? res.data : [];
+      setProducts(data);
+      setFiltered(data);
+    } catch (err) {
+      console.error('Gagal memuat produk:', err);
+      setProducts([]);
+      setFiltered([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchProducts(); }, [fetchProducts]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (!token) { router.push('/sign-in'); return; }
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (user.role === 'ADMIN') { router.push('/admin/profile'); return; }
+    } catch { router.push('/sign-in'); }
+  }, [router]);
+
+  useEffect(() => {
+    let result = [...products];
+
+    if (activeCategory) {
+      result = result.filter(
+        (p) => p.category?.name?.toLowerCase().replace(/\s+/g, '-') === activeCategory
+      );
+    }
+
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (p) => p.name.toLowerCase().includes(q) || p.description?.toLowerCase().includes(q)
+      );
+    }
+
+    switch (sort) {
+      case 'termurah':
+        result.sort((a, b) => a.price - b.price);
+        break;
+      case 'termahal':
+        result.sort((a, b) => b.price - a.price);
+        break;
+      case 'rating':
+        result.sort((a, b) => b.averageRating - a.averageRating);
+        break;
+      default:
+        result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    }
+
+    setFiltered(result);
+  }, [search, sort, products, activeCategory]);
+
+  const handleAddToCart = async (productId: number) => {
+    try {
+      await api.addToCart(productId);
+      setCartCount((c) => c + 1);
+    } catch {
+      const token = localStorage.getItem('access_token');
+      if (!token) { router.push('/sign-in'); return; }
+      alert('Gagal menambahkan ke keranjang. Silakan coba lagi.');
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#faf6f0] flex items-center justify-center">
+        <div className="text-center">
+          <div className="relative w-24 h-24 mx-auto mb-8">
+            <div className="absolute inset-0 border-2 border-amber-600/20 rotate-45 rounded-xl animate-pulse" />
+            <div className="absolute inset-2 border-2 border-amber-600/30 -rotate-12 rounded-xl animate-pulse" style={{ animationDelay: '0.1s' }} />
+            <div className="absolute inset-4 border-2 border-amber-600/40 rotate-12 rounded-xl animate-pulse" style={{ animationDelay: '0.2s' }} />
+            <div className="absolute inset-6 border-2 border-amber-600/60 rounded-lg animate-pulse" style={{ animationDelay: '0.3s' }} />
+            <div className="absolute inset-8 border border-amber-600/40 rounded" />
+          </div>
+          <p className="text-amber-800 font-serif text-lg">Menjelajahi koleksi...</p>
+          <div className="w-48 h-0.5 bg-amber-200 mx-auto mt-4 overflow-hidden rounded-full">
+            <div className="w-full h-full bg-amber-600 rounded-full animate-pulse" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#faf6f0]">
+
+      {/* ─── HERO HEADER ─── */}
+      <div className="relative bg-[#1a0f08] overflow-hidden">
+        <div className="absolute inset-0 opacity-15"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='6' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='10' r='6' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3Ccircle cx='10' cy='30' r='6' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='30' r='6' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3Ccircle cx='20' cy='20' r='8' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3C/svg%3E")`,
+            backgroundSize: '120px 120px',
+          }}
+        />
+        <div className="absolute inset-0 opacity-[0.07]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+            backgroundSize: '60px 60px',
+          }}
+        />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-2 text-xs mb-4">
+            <Link href="/dashboard" className="text-amber-400/60 hover:text-amber-300 transition-colors">Beranda</Link>
+            <ChevronRight className="w-3 h-3 text-amber-600/40" />
+            <span className="text-amber-300 font-medium">Produk</span>
+          </div>
+
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <div className="w-16 h-px bg-gradient-to-r from-transparent to-amber-600/50" />
+              <Store className="w-5 h-5 text-amber-600/70" />
+              <div className="w-16 h-px bg-gradient-to-l from-transparent to-amber-600/50" />
+            </div>
+            <h1 className="text-3xl md:text-5xl font-serif font-bold text-amber-100 tracking-wide">
+              Koleksi Produk
+            </h1>
+            <p className="text-amber-400/60 font-serif italic text-sm md:text-base mt-2">
+              Temukan kain tenun tradisional Nusantara
+            </p>
+            <div className="flex items-center justify-center gap-4 mt-6">
+              <div className="w-8 h-8 border border-amber-700/30 rotate-45" />
+              <div className="w-2 h-2 bg-amber-600/50 rotate-45" />
+              <div className="w-8 h-8 border border-amber-700/30 rotate-45" />
+            </div>
+          </div>
+        </div>
+        <div className="h-3 bg-gradient-to-b from-[#1a0f08] to-[#faf6f0]" />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 relative z-10">
+
+        {/* ─── SEARCH & FILTER BAR ─── */}
+        <div className="bg-white rounded-2xl border border-amber-200/40 shadow-sm p-4 md:p-6 mb-6">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-400" />
+              <input
+                type="text"
+                placeholder="Cari produk..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-amber-50/50 border border-amber-200/60 rounded-xl text-sm text-[#1a120b] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400 transition-all"
+              />
+            </div>
+            <div className="flex gap-2">
+              <div className="relative">
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value)}
+                  className="px-4 py-2.5 bg-amber-50/50 border border-amber-200/60 rounded-xl text-sm text-[#1a120b] focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400 transition-all appearance-none cursor-pointer pr-8"
+                >
+                  <option value="terbaru">Terbaru</option>
+                  <option value="termurah">Termurah</option>
+                  <option value="termahal">Termahal</option>
+                  <option value="rating">Rating Tertinggi</option>
+                </select>
+                <svg width="10" height="10" viewBox="0 0 16 16" fill="none" className="absolute right-3 top-1/2 -translate-y-1/2 text-amber-500 pointer-events-none">
+                  <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                </svg>
+              </div>
+              <Link
+                href="/customer/cart"
+                className="relative inline-flex items-center gap-2 px-4 py-2.5 bg-amber-700 hover:bg-amber-600 text-white rounded-xl transition-all shadow-sm text-sm font-medium"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                <span className="hidden sm:inline">Keranjang</span>
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-md ring-2 ring-white">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            </div>
+          </div>
+
+          {/* Category chips */}
+          <div className="flex items-center gap-2 mt-4 pt-4 border-t border-amber-100 overflow-x-auto no-scrollbar">
+            {categories.map((cat) => (
+              <button
+                key={cat.slug}
+                onClick={() => setActiveCategory(cat.slug === activeCategory ? '' : cat.slug)}
+                className={`whitespace-nowrap px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
+                  activeCategory === cat.slug
+                    ? 'bg-amber-700 text-white border-amber-700 shadow-sm'
+                    : 'bg-white text-gray-600 border-amber-200/60 hover:border-amber-400 hover:text-amber-700'
+                }`}
+              >
+                {cat.name}
+                {cat.slug && activeCategory !== cat.slug && (
+                  <span className="ml-1.5 text-[10px] opacity-50">•</span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ─── RESULTS HEADER ─── */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-2.5">
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center">
+              <Store className="w-3 h-3 text-amber-700" />
+            </div>
+            <p className="text-sm text-gray-500">
+              Menampilkan <span className="font-semibold text-[#1a120b]">{filtered.length}</span> produk
+              {activeCategory && (
+                <span className="text-amber-600"> — {categories.find(c => c.slug === activeCategory)?.name || activeCategory}</span>
+              )}
+              {search && (
+                <> untuk &ldquo;<span className="font-semibold text-amber-700">{search}</span>&rdquo;</>
+              )}
+            </p>
+          </div>
+          {(search || activeCategory) && (
+            <button
+              onClick={() => { setSearch(''); setActiveCategory(''); setSort('terbaru'); }}
+              className="text-xs text-amber-700 hover:text-amber-600 font-medium transition-colors"
+            >
+              Reset
+            </button>
+          )}
+        </div>
+
+        {/* ─── PRODUCT GRID ─── */}
+        {filtered.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-amber-200/40 shadow-sm p-16 text-center">
+            <div className="w-20 h-20 mx-auto mb-5 bg-amber-50 rounded-full flex items-center justify-center border border-amber-200/60">
+              <Package className="w-8 h-8 text-amber-400" />
+            </div>
+            <h3 className="font-serif font-bold text-xl text-[#1a120b] mb-1">Produk tidak ditemukan</h3>
+            <p className="text-gray-500 text-sm">Coba gunakan kata kunci atau filter lain</p>
+            <button
+              onClick={() => { setSearch(''); setActiveCategory(''); setSort('terbaru'); }}
+              className="mt-6 px-6 py-2.5 bg-amber-700 hover:bg-amber-600 text-white rounded-xl text-sm font-medium transition-all shadow-sm"
+            >
+              Reset Filter
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+            {filtered.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onAddToCart={handleAddToCart}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* ─── FOOTER ─── */}
+        <div className="mt-14 mb-8 text-center">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="w-12 h-px bg-amber-300/40" />
+            <svg width="10" height="10" viewBox="0 0 16 16" fill="none" className="text-amber-400/40">
+              <path d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z" fill="currentColor"/>
+            </svg>
+            <div className="w-12 h-px bg-amber-300/40" />
+          </div>
+          <p className="text-gray-400 text-xs tracking-wider">
+            TenunKita — Warisan Budaya Nusantara
+          </p>
+          <p className="text-gray-400/60 text-[11px] mt-1">
+            &copy; {new Date().getFullYear()} TenunKita. All rights reserved.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  );
+}
