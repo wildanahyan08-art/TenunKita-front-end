@@ -189,7 +189,7 @@ export default function CustomerProductsPage() {
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#f0e6d4] to-transparent" />
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt30 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 relative z-10">
 
         {/* ─── BREADCRUMB ─── */}
         <div className="flex items-center gap-2 text-xs text-gray-400 mb-6">
@@ -206,45 +206,37 @@ export default function CustomerProductsPage() {
               backgroundSize: '30px 30px',
             }}
           />
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-400" />
+          
+          {/* Menggunakan Grid Sistem: 10 Kolom di Mobile, Flexbox di Desktop */}
+          <div className="grid grid-cols-10 gap-2 sm:flex sm:flex-row sm:gap-3 items-center">
+            
+            {/* Input Pencarian (Membesat 7 Kolom / 70% di Mobile) */}
+            <div className="relative col-span-7 sm:flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 h-4 text-amber-400" />
               <input
                 type="text"
                 placeholder="Cari produk..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-amber-900/20 border border-amber-700/40 rounded-xl text-sm text-amber-100 placeholder:text-amber-400/40 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all"
+                className="w-full pl-8 sm:pl-10 pr-2 sm:pr-4 py-2.5 bg-amber-900/20 border border-amber-700/40 rounded-xl text-xs sm:text-sm text-amber-100 placeholder:text-amber-400/40 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all"
               />
             </div>
-            <div className="flex gap-2">
-              <div className="relative">
-                <select
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value)}
-                  className="px-4 py-2.5 bg-amber-900/20 border border-amber-700/40 rounded-xl text-sm text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all appearance-none cursor-pointer pr-8"
-                >
-                  <option value="terbaru">Terbaru</option>
-                  <option value="termurah">Termurah</option>
-                  <option value="termahal">Termahal</option>
-                  <option value="rating">Rating Tertinggi</option>
-                </select>
-                <svg width="10" height="10" viewBox="0 0 16 16" fill="none" className="absolute right-3 top-1/2 -translate-y-1/2 text-amber-500 pointer-events-none">
-                  <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" />
-                </svg>
-              </div>
-              <Link
-                href="/customer/cart"
-                className="relative inline-flex items-center gap-2 px-4 py-2.5 bg-amber-700 hover:bg-amber-600 text-white rounded-xl transition-all shadow-sm text-sm font-medium"
+            
+            {/* Dropdown Urutan (Mengecil 3 Kolom / 30% di Mobile) */}
+            <div className="relative col-span-3 sm:shrink-0">
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+                className="w-full pl-2 sm:pl-4 pr-6 sm:pr-8 py-2.5 bg-amber-900/20 border border-amber-700/40 rounded-xl text-xs sm:text-sm text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all appearance-none cursor-pointer text-center sm:text-left"
               >
-                <ShoppingCart className="w-4 h-4" />
-                <span className="hidden sm:inline">Keranjang</span>
-                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-md ring-2 ring-white">
-                    {cartCount}
-                  </span>
-                )}
-              </Link>
+                <option value="terbaru">Terbaru</option>
+                <option value="termurah">Termurah</option>
+                <option value="termahal">Termahal</option>
+                <option value="rating">Rating</option>
+              </select>
+              <svg width="8" height="8" viewBox="0 0 16 16" fill="none" className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-amber-500 pointer-events-none">
+                <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" />
+              </svg>
             </div>
           </div>
 
