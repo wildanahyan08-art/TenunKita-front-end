@@ -112,15 +112,15 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f0e6d4]">
+    <div className="min-h-screen bg-[#f0e6d4] relative">
       {/* Background batik patterns */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.08]"
+      <div className="absolute inset-0 pointer-events-none opacity-[0.08]"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='10' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='20' cy='20' r='12' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3C/svg%3E")`,
           backgroundSize: '100px 100px',
         }}
       />
-      <div className="fixed inset-0 pointer-events-none opacity-[0.05]"
+      <div className="absolute inset-0 pointer-events-none opacity-[0.05]"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='50' height='50' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23b8863c'/%3E%3C/svg%3E")`,
           backgroundSize: '70px 70px',
