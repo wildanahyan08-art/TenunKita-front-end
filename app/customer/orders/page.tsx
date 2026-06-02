@@ -92,6 +92,7 @@ export default function CustomerOrderPage() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<OrderStatus | 'ALL'>('ALL');
   const [proofStatus, setProofStatus] = useState<Record<number, string>>({});
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -182,6 +183,29 @@ export default function CustomerOrderPage() {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [fetchData]);
+
+  const handleCustomerDelete = async (orderId: number) => {
+    if (!confirm('Yakin ingin menghapus pesanan ini?')) return;
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+    setDeletingId(orderId);
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tenunkita-production.up.railway.app';
+      const res = await fetch(`${API_URL}/orders/${orderId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || 'Gagal menghapus pesanan');
+      }
+      setOrders((prev) => prev.filter((o) => o.id !== orderId));
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Gagal menghapus pesanan');
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const filtered = filter === 'ALL' ? orders : orders.filter((o) => o.status === filter);
 
@@ -394,6 +418,15 @@ export default function CustomerOrderPage() {
                     </span>
                     {order.payment?.paymentMethod && (
                       <span className="text-[11px] text-gray-400">{order.payment.paymentMethod}</span>
+                    )}
+                    {order.status === 'PENDING' && (
+                      <button
+                        onClick={() => handleCustomerDelete(order.id)}
+                        disabled={deletingId === order.id}
+                        className="text-[11px] font-semibold px-2.5 py-1.5 rounded-lg border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 disabled:opacity-40 transition-all"
+                      >
+                        {deletingId === order.id ? '...' : 'Hapus'}
+                      </button>
                     )}
                     {!isPaid && proofSt !== 'PENDING' && proofSt !== 'APPROVED' && (
                       <Link

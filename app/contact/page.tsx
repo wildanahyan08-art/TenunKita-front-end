@@ -1,7 +1,20 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronRight, Mail, MapPin, Phone, Send, Clock, Camera, Globe, Music2, Play } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ChevronRight, Mail, MapPin, Phone, Send, Clock, Camera, Globe, Music2, Play, CheckCircle, Loader2 } from 'lucide-react';
+
+export interface Root {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 const contactInfo = [
   {
@@ -36,6 +49,67 @@ const socials = [
 ];
 
 export default function ContactPage() {
+  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [isSending, setIsSending] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
+
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    const userData = localStorage.getItem('user');
+    if (token && userData) {
+      try {
+        const parsed = JSON.parse(userData);
+        if (parsed.role === 'BUYER') {
+          setIsLoggedIn(true);
+          setUserName(parsed.name || '');
+          setUserEmail(parsed.email || '');
+          setForm((prev) => ({ ...prev, name: parsed.name || '', email: parsed.email || '' }));
+        }
+      } catch {
+        // ignore
+      }
+    }
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      router.push('/sign-in');
+      return;
+    }
+
+    setIsSending(true);
+    setError(null);
+
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tenunkita-production.up.railway.app';
+      const res = await fetch(`${API_URL}/contacts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Gagal mengirim pesan');
+
+      setSuccess(true);
+      setForm({ name: userName, email: userEmail, phone: '', message: '' });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Terjadi kesalahan');
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#faf6f0]">
       {/* ─── HERO ─── */}
@@ -97,51 +171,100 @@ export default function ContactPage() {
                 <h2 className="text-2xl md:text-3xl font-serif font-bold text-amber-100 mb-1">Ada yang bisa kami bantu?</h2>
                 <p className="text-amber-100/50 text-sm mb-6">Isi form di bawah ini dan tim kami akan merespon secepatnya.</p>
 
-                <form className="space-y-5">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                {success ? (
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center">
+                      <CheckCircle className="w-8 h-8 text-emerald-400" />
+                    </div>
+                    <h3 className="text-lg font-serif font-bold text-amber-100 mb-1">Pesan Terkirim!</h3>
+                    <p className="text-amber-100/50 text-sm">Terima kasih, tim kami akan menghubungi Anda segera.</p>
+                    <button
+                      onClick={() => setSuccess(false)}
+                      className="mt-5 px-5 py-2 bg-amber-700 hover:bg-amber-600 text-white text-sm font-medium rounded-xl transition-all"
+                    >
+                      Kirim Pesan Lagi
+                    </button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    {!isLoggedIn && (
+                      <div className="p-4 rounded-xl bg-amber-800/30 border border-amber-700/40 text-amber-200 text-sm">
+                        Silakan{' '}
+                        <Link href="/sign-in" className="text-amber-400 font-semibold underline hover:text-amber-300 transition-colors">
+                          masuk
+                        </Link>{' '}
+                        terlebih dahulu untuk mengirim pesan.
+                      </div>
+                    )}
+
+                    {error && (
+                      <div className="p-3 rounded-xl bg-red-900/30 border border-red-800/40 text-red-300 text-sm">
+                        {error}
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <div>
+                        <label className="block text-xs font-bold text-amber-400 uppercase tracking-[0.1em] mb-1.5">Nama Lengkap</label>
+                        <input
+                          type="text"
+                          required
+                          value={form.name}
+                          onChange={(e) => setForm({ ...form, name: e.target.value })}
+                          placeholder="Masukkan nama Anda"
+                          className="w-full px-4 py-3 bg-amber-900/20 border border-amber-700/40 rounded-xl text-sm text-amber-100 placeholder-amber-400/40 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-amber-400 uppercase tracking-[0.1em] mb-1.5">Email</label>
+                        <input
+                          type="email"
+                          required
+                          value={form.email}
+                          onChange={(e) => setForm({ ...form, email: e.target.value })}
+                          placeholder="Masukkan email Anda"
+                          className="w-full px-4 py-3 bg-amber-900/20 border border-amber-700/40 rounded-xl text-sm text-amber-100 placeholder-amber-400/40 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all"
+                        />
+                      </div>
+                    </div>
+
                     <div>
-                      <label className="block text-xs font-bold text-amber-400 uppercase tracking-[0.1em] mb-1.5">Nama Lengkap</label>
+                      <label className="block text-xs font-bold text-amber-400 uppercase tracking-[0.1em] mb-1.5">Telepon</label>
                       <input
-                        type="text"
-                        placeholder="Masukkan nama Anda"
+                        type="tel"
+                        required
+                        value={form.phone}
+                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                        placeholder="Masukkan nomor telepon Anda"
                         className="w-full px-4 py-3 bg-amber-900/20 border border-amber-700/40 rounded-xl text-sm text-amber-100 placeholder-amber-400/40 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all"
                       />
                     </div>
+
                     <div>
-                      <label className="block text-xs font-bold text-amber-400 uppercase tracking-[0.1em] mb-1.5">Email</label>
-                      <input
-                        type="email"
-                        placeholder="Masukkan email Anda"
-                        className="w-full px-4 py-3 bg-amber-900/20 border border-amber-700/40 rounded-xl text-sm text-amber-100 placeholder-amber-400/40 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all"
+                      <label className="block text-xs font-bold text-amber-400 uppercase tracking-[0.1em] mb-1.5">Pesan</label>
+                      <textarea
+                        rows={5}
+                        required
+                        value={form.message}
+                        onChange={(e) => setForm({ ...form, message: e.target.value })}
+                        placeholder="Tulis pesan Anda di sini..."
+                        className="w-full px-4 py-3 bg-amber-900/20 border border-amber-700/40 rounded-xl text-sm text-amber-100 placeholder-amber-400/40 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all resize-none"
                       />
                     </div>
-                  </div>
 
-                  <div>
-                    <label className="block text-xs font-bold text-amber-400 uppercase tracking-[0.1em] mb-1.5">Subjek</label>
-                    <input
-                      type="text"
-                      placeholder="Masukkan subjek pesan"
-                      className="w-full px-4 py-3 bg-amber-900/20 border border-amber-700/40 rounded-xl text-sm text-amber-100 placeholder-amber-400/40 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-amber-400 uppercase tracking-[0.1em] mb-1.5">Pesan</label>
-                    <textarea
-                      rows={5}
-                      placeholder="Tulis pesan Anda di sini..."
-                      className="w-full px-4 py-3 bg-amber-900/20 border border-amber-700/40 rounded-xl text-sm text-amber-100 placeholder-amber-400/40 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all resize-none"
-                    />
-                  </div>
-
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-amber-700 hover:bg-amber-600 text-white font-medium rounded-xl transition-all shadow-md hover:shadow-lg"
-                  >
-                    <Send className="w-4 h-4" /> Kirim Pesan
-                  </button>
-                </form>
+                    <button
+                      type="submit"
+                      disabled={isSending || !isLoggedIn}
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-amber-700 hover:bg-amber-600 disabled:bg-amber-800 disabled:opacity-50 text-white font-medium rounded-xl transition-all shadow-md hover:shadow-lg"
+                    >
+                      {isSending ? (
+                        <><Loader2 className="w-4 h-4 animate-spin" /> Mengirim...</>
+                      ) : (
+                        <><Send className="w-4 h-4" /> Kirim Pesan</>
+                      )}
+                    </button>
+                  </form>
+                )}
               </div>
             </div>
           </div>

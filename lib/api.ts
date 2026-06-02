@@ -57,12 +57,14 @@ export const api = {
   },
 
   async updateProfile(token: string, data: Record<string, unknown>) {
-    const res = await fetch(`${API_URL}/user/profile`, {
-      method: 'PUT',
+    const res = await fetch(`${API_URL}/users/profile`, {
+      method: 'PATCH',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify(data)
     });
-    return res.json();
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message || 'Gagal memperbarui profil');
+    return result;
   },
 
   async getProducts(): Promise<ProductListResponse> {
@@ -138,6 +140,35 @@ export const api = {
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Gagal memuat bukti pembayaran');
     return Array.isArray(data) ? data : data.data ?? [];
+  },
+
+  async getUsers(token: string) {
+    const res = await fetch(`${API_URL}/users`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal memuat data pengguna');
+    return data;
+  },
+
+  async getContacts(token: string) {
+    const res = await fetch(`${API_URL}/contacts`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal memuat kontak');
+    return data;
+  },
+
+  async updateContactStatus(token: string, id: number, status: string) {
+    const res = await fetch(`${API_URL}/contacts/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ status }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal mengubah status');
+    return data;
   },
 
   async getReviews(productId: number): Promise<Review[]> {

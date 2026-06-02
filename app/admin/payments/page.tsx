@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface BillItem {
   productName: string;
@@ -32,12 +33,12 @@ interface PaymentData {
 
 
 
-const PAYMENT_STATUS = ['PENDING', 'VERIFIED', 'REJECTED'] as const;
+const PAYMENT_STATUS = ['PENDING', 'APPROVED', 'REJECTED'] as const;
 type PaymentStatus = (typeof PAYMENT_STATUS)[number];
 
 const paymentConfig: Record<PaymentStatus, { label: string; color: string }> = {
   PENDING: { label: 'Menunggu', color: 'text-yellow-700 bg-yellow-50 border-yellow-200' },
-  VERIFIED: { label: 'Terverifikasi', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
+  APPROVED: { label: 'Terverifikasi', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
   REJECTED: { label: 'Ditolak', color: 'text-red-700 bg-red-50 border-red-200' },
 };
 
@@ -133,7 +134,8 @@ export default function AdminPaymentsPage() {
               });
               if (res.ok) {
                 const json = await res.json();
-                const list: PaymentData[] = Array.isArray(json) ? json : (json.data ?? []);
+                const raw = json.data ?? json;
+                const list: PaymentData[] = Array.isArray(raw) ? raw : [raw];
                 if (list.length > 0) {
                   paymentMap[bill.orderId] = list[0];
                 }
@@ -164,12 +166,14 @@ export default function AdminPaymentsPage() {
   };
 
   const handleVerify = async (orderId: number, newStatus: PaymentStatus) => {
+    const payment = payments[orderId];
+    if (!payment) return;
     const token = localStorage.getItem('access_token');
     if (!token) return;
     setUpdatingId(orderId);
     try {
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tenunkita-production.up.railway.app';
-      const res = await fetch(`${API_URL}/payment/verify/${orderId}`, {
+      const res = await fetch(`${API_URL}/payment/verify/${payment.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ status: newStatus }),
@@ -205,7 +209,7 @@ export default function AdminPaymentsPage() {
 
   const totalRevenue = bills.reduce((sum, b) => sum + (b.totalAmount || 0), 0);
   const pendingPayments = Object.values(payments).filter((p) => p?.status === 'PENDING').length;
-  const verifiedCount = Object.values(payments).filter((p) => p?.status === 'VERIFIED').length;
+  const verifiedCount = Object.values(payments).filter((p) => p?.status === 'APPROVED').length;
 
   if (isLoading) {
     return (
@@ -349,7 +353,17 @@ export default function AdminPaymentsPage() {
               <strong className="text-[#1a120b]">{filtered.length}</strong> tagihan ditemukan
             </span>
           </div>
-          <div className="relative max-w-xs w-full sm:w-auto">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/admin/payments/verify"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-700 hover:bg-amber-600 text-white font-medium rounded-xl transition-all shadow-sm text-sm"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              Verifikasi Pembayaran
+            </Link>
+            <div className="relative max-w-xs w-full sm:w-auto">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
@@ -360,6 +374,7 @@ export default function AdminPaymentsPage() {
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-4 py-2.5 bg-white border border-amber-200/60 rounded-xl text-sm text-[#1a120b] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400 transition-all"
             />
+          </div>
           </div>
         </div>
 

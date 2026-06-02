@@ -191,19 +191,19 @@ export default function CustomerCheckoutPage() {
             <p className="text-xs text-gray-500 mt-1">
               Segera unggah bukti pembayaran Anda di halaman pesanan untuk mempercepat proses verifikasi.
             </p>
+            </div>
           </div>
-        </div>
 
-        {/* ─── ACTIONS ─── */}
-        <div className="mt-6 flex flex-col sm:flex-row items-center gap-3">
-          <Link
-            href="/customer/orders"
-            className="w-full sm:w-auto px-6 py-3 bg-amber-700 hover:bg-amber-600 text-white rounded-xl font-medium transition-all shadow-md text-center flex items-center justify-center gap-2"
-          >
-            <ClipboardList className="w-4 h-4" /> Lihat Pesanan Saya
-          </Link>
-          <Link
-            href="/customer/products"
+          {/* ─── ACTIONS ─── */}
+          <div className="mt-6 flex flex-col sm:flex-row items-center gap-3">
+            <Link
+              href="/customer/orders"
+              className="w-full sm:w-auto px-6 py-3 bg-amber-700 hover:bg-amber-600 text-white rounded-xl font-medium transition-all shadow-md text-center flex items-center justify-center gap-2"
+            >
+              <ClipboardList className="w-4 h-4" /> Lihat Pesanan Saya
+            </Link>
+            <Link
+              href="/customer/products"
             className="w-full sm:w-auto px-6 py-3 border border-amber-200 text-amber-700 hover:bg-amber-50 rounded-xl font-medium transition-all text-center flex items-center justify-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" /> Belanja Lagi

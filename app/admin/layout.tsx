@@ -10,6 +10,7 @@ import {
   Users,
   ShoppingBag,
   Wallet,
+  MessageSquare,
   LogOut,
   Menu,
   X,
@@ -29,6 +30,7 @@ const menuItems = [
   { name: 'Pelanggan', icon: Users, href: '/admin/customers' },
   { name: 'Pesanan', icon: ShoppingBag, href: '/admin/orders' },
   { name: 'Pembayaran', icon: Wallet, href: '/admin/payments' },
+  { name: 'Kontak', icon: MessageSquare, href: '/admin/contacts' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -72,10 +74,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* Mobile toggle */}
+      {/* Sidebar toggle */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="fixed top-4 left-4 z-50 lg:hidden p-2.5 bg-white rounded-xl shadow-lg text-amber-700 border border-amber-100 hover:bg-amber-50 transition-colors"
+        className="fixed top-4 left-4 z-50 p-2.5 bg-white rounded-xl shadow-lg text-amber-700 border border-amber-100 hover:bg-amber-50 transition-colors"
       >
         {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
       </button>
@@ -83,7 +85,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* ─── SIDEBAR ─── */}
       <aside
         className={`fixed top-0 left-0 z-40 h-screen w-64 bg-white border-r border-amber-100 flex flex-col transition-transform duration-300 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Logo */}
@@ -164,10 +166,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* ─── MAIN CONTENT ─── */}
-      <main className="flex-1 min-w-0">
+      <main className={`flex-1 min-w-0 transition-all duration-300 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-0'}`}>
         {/* Top bar */}
         <div className="sticky top-0 z-30 bg-[#faf6f0]/90 backdrop-blur-md border-b border-amber-100/60">
-          <div className="flex items-center justify-end gap-3 px-4 sm:px-6 lg:px-8 py-3 ml-14 lg:ml-0">
+          <div className="flex items-center justify-end gap-3 px-4 sm:px-6 lg:px-8 py-3 ml-14">
             <div className="relative">
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}

@@ -602,7 +602,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── CATEGORIES ─── */}
-      <section className="py-16 md:py-20 bg-[#faf6f0] border-t border-amber-200/40">
+      <section className="py-16 md:py-20 bg-[#f0e6d4] border-t border-amber-200/40">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-3 mb-3">

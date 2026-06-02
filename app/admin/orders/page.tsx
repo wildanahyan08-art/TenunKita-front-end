@@ -130,6 +130,11 @@ export default function AdminOrdersPage() {
     }
   };
 
+  const handleDelete = (orderId: number) => {
+    if (!confirm('Sembunyikan pesanan ini dari daftar admin?')) return;
+    setOrders((prev) => prev.filter((o) => o.id !== orderId));
+  };
+
   const filtered = orders.filter((o) => {
     if (!search) return true;
     const q = search.toLowerCase();
@@ -313,7 +318,7 @@ export default function AdminOrdersPage() {
               <div className="col-span-2 text-right">Total</div>
               <div className="col-span-2 text-center">Status</div>
               <div className="col-span-2">Tanggal</div>
-              <div className="col-span-2 text-right">Item</div>
+              <div className="col-span-2 text-right">Aksi</div>
             </div>
 
             {/* Rows */}
@@ -352,6 +357,12 @@ export default function AdminOrdersPage() {
                               );
                             })}
                           </select>
+                          <button
+                            onClick={() => handleDelete(order.id)}
+                            className="ml-auto text-[10px] font-semibold px-2 py-0.5 rounded-md border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 transition-all"
+                          >
+                            Hapus
+                          </button>
                           <span className="w-1 h-1 rounded-full bg-amber-300" />
                           <span className="text-[11px] text-amber-700 font-semibold">{formatPrice(order.totalAmount)}</span>
                         </div>
@@ -398,8 +409,13 @@ export default function AdminOrdersPage() {
                     <div className="hidden md:flex col-span-2 items-center text-sm text-gray-500">
                       {formatDate(order.createdAt)}
                     </div>
-                    <div className="hidden md:flex col-span-2 items-center justify-end text-sm text-gray-500">
-                      {itemCount > 0 ? `${itemCount} item` : '—'}
+                    <div className="hidden md:flex col-span-2 items-center justify-end">
+                      <button
+                        onClick={() => handleDelete(order.id)}
+                        className="text-[11px] font-semibold px-2.5 py-1.5 rounded-lg border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 transition-all"
+                      >
+                        Hapus
+                      </button>
                     </div>
                   </div>
                 );

@@ -13,12 +13,6 @@ interface PaymentProof {
   updatedAt: string;
 }
 
-interface PaymentProofResponse {
-  success: boolean;
-  message: string;
-  data: PaymentProof;
-}
-
 const months = [
   'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
   'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
@@ -34,8 +28,9 @@ export default function VerifyPaymentsPage() {
   const [showModal, setShowModal] = useState(false);
   const [adminNote, setAdminNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [action, setAction] = useState<'VERIFIED' | 'REJECTED'>('VERIFIED');
+  const [action, setAction] = useState<'APPROVED' | 'REJECTED'>('APPROVED');
   const [searchOrderId, setSearchOrderId] = useState('');
+  const [filterTab, setFilterTab] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('PENDING');
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tenunkita-production.up.railway.app';
 
@@ -55,12 +50,13 @@ export default function VerifyPaymentsPage() {
 
     try {
       if (orderId) {
-        const res = await fetch(`${API_URL}/payment/verify/${orderId}`, {
+        const res = await fetch(`${API_URL}/payment/proof/${orderId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const json: PaymentProofResponse = await res.json();
-        if (res.ok && json.success) {
-          setPayments([json.data]);
+        const json = await res.json();
+        if (res.ok) {
+          const list: PaymentProof[] = Array.isArray(json) ? json : [json];
+          setPayments(list);
         } else {
           setError(json.message || 'Data tidak ditemukan');
         }
@@ -79,33 +75,37 @@ export default function VerifyPaymentsPage() {
 
         const proofList: PaymentProof[] = [];
         for (const o of raw) {
-          const p = o.payment as Record<string, unknown> | undefined;
-          if (p) {
-            const status = (p.paymentStatus as string) || (p.status as string) || '';
-            if (status === 'PENDING' || !status) continue;
-            proofList.push({
-              id: (p.id as number) ?? 0,
-              orderId: o.id as number,
-              fileUrl: (p.fileUrl as string) ?? '',
-              status: status,
-              adminNote: (p.adminNote as string) ?? '',
-              createdAt: (p.createdAt as string) ?? '',
-              updatedAt: (p.updatedAt as string) ?? '',
+          let found: PaymentProof | null = null;
+          try {
+            const proofRes = await fetch(`${API_URL}/payment/proof/${o.id}`, {
+              headers: { Authorization: `Bearer ${token}` },
             });
+            if (proofRes.ok) {
+              const json = await proofRes.json();
+              const rawData = json.data ?? json;
+              const list: PaymentProof[] = Array.isArray(rawData) ? rawData : [rawData];
+              if (list.length > 0) found = list[0];
+            }
+          } catch {
+            // no payment proof
+          }
+
+          if (found) {
+            proofList.push(found);
           } else {
-            try {
-              const proofRes = await fetch(`${API_URL}/payment/proof/${o.id}`, {
-                headers: { Authorization: `Bearer ${token}` },
+            const p = o.payment as Record<string, unknown> | undefined;
+            if (p) {
+              const status = (p.paymentStatus as string) || (p.status as string) || '';
+              if (!status) continue;
+              proofList.push({
+                id: (p.id as number) ?? 0,
+                orderId: o.id as number,
+                fileUrl: (p.fileUrl as string) ?? '',
+                status: status,
+                adminNote: (p.adminNote as string) ?? '',
+                createdAt: (p.createdAt as string) ?? '',
+                updatedAt: (p.updatedAt as string) ?? '',
               });
-              if (proofRes.ok) {
-                const json = await proofRes.json();
-                const list: PaymentProof[] = Array.isArray(json) ? json : (json.data ?? []);
-                if (list.length > 0) {
-                  proofList.push(list[0]);
-                }
-              }
-            } catch {
-              // no payment proof
             }
           }
         }
@@ -123,7 +123,7 @@ export default function VerifyPaymentsPage() {
     fetchPayments(searchOrderId.trim() || undefined);
   };
 
-  const openVerifyModal = (payment: PaymentProof, actionType: 'VERIFIED' | 'REJECTED') => {
+  const openVerifyModal = (payment: PaymentProof, actionType: 'APPROVED' | 'REJECTED') => {
     setSelectedPayment(payment);
     setAction(actionType);
     setAdminNote('');
@@ -138,7 +138,7 @@ export default function VerifyPaymentsPage() {
     if (!token) return;
 
     try {
-      const res = await fetch(`${API_URL}/payment/verify/${selectedPayment.orderId}`, {
+      const res = await fetch(`${API_URL}/payment/verify/${selectedPayment.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
@@ -150,7 +150,7 @@ export default function VerifyPaymentsPage() {
       const result = await res.json();
       if (!res.ok) throw new Error(result.message || 'Gagal memverifikasi');
       setSuccess(
-        action === 'VERIFIED'
+        action === 'APPROVED'
           ? `Pembayaran #${selectedPayment.orderId} berhasil diverifikasi`
           : `Pembayaran #${selectedPayment.orderId} ditolak`
       );
@@ -182,12 +182,12 @@ export default function VerifyPaymentsPage() {
 
   const statusConfig: Record<string, { label: string; color: string }> = {
     PENDING: { label: 'Menunggu', color: 'text-yellow-700 bg-yellow-50 border-yellow-200' },
-    VERIFIED: { label: 'Terverifikasi', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
+    APPROVED: { label: 'Terverifikasi', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
     REJECTED: { label: 'Ditolak', color: 'text-red-700 bg-red-50 border-red-200' },
   };
 
   const pendingCount = payments.filter((p) => p.status === 'PENDING').length;
-  const verifiedCount = payments.filter((p) => p.status === 'VERIFIED').length;
+  const verifiedCount = payments.filter((p) => p.status === 'APPROVED').length;
   const rejectedCount = payments.filter((p) => p.status === 'REJECTED').length;
 
   if (isLoading) {
@@ -246,24 +246,29 @@ export default function VerifyPaymentsPage() {
           </div>
         )}
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-xl border border-amber-200/40 p-5">
-            <p className="text-2xl md:text-3xl font-bold text-[#1a120b]">{payments.length}</p>
-            <p className="text-[11px] text-gray-500 font-semibold uppercase tracking-[0.15em] mt-1">Total Bukti</p>
-          </div>
-          <div className="bg-white rounded-xl border border-amber-200/40 p-5">
-            <p className="text-2xl md:text-3xl font-bold text-yellow-700">{pendingCount}</p>
-            <p className="text-[11px] text-gray-500 font-semibold uppercase tracking-[0.15em] mt-1">Menunggu</p>
-          </div>
-          <div className="bg-white rounded-xl border border-amber-200/40 p-5">
-            <p className="text-2xl md:text-3xl font-bold text-emerald-700">{verifiedCount}</p>
-            <p className="text-[11px] text-gray-500 font-semibold uppercase tracking-[0.15em] mt-1">Terverifikasi</p>
-          </div>
-          <div className="bg-white rounded-xl border border-amber-200/40 p-5">
-            <p className="text-2xl md:text-3xl font-bold text-red-700">{rejectedCount}</p>
-            <p className="text-[11px] text-gray-500 font-semibold uppercase tracking-[0.15em] mt-1">Ditolak</p>
-          </div>
+        {/* Filter Tabs */}
+        <div className="flex items-center gap-2 mb-6 overflow-x-auto">
+          {[
+            { key: 'ALL', label: 'Semua', count: payments.length },
+            { key: 'PENDING', label: 'Menunggu', count: pendingCount },
+            { key: 'APPROVED', label: 'Terverifikasi', count: verifiedCount },
+            { key: 'REJECTED', label: 'Ditolak', count: rejectedCount },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setFilterTab(tab.key as typeof filterTab)}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
+                filterTab === tab.key
+                  ? 'bg-amber-700 text-white shadow-sm'
+                  : 'bg-white text-gray-500 border border-amber-200/40 hover:bg-amber-50'
+              }`}
+            >
+              {tab.label}
+              <span className={`text-[10px] ${filterTab === tab.key ? 'text-amber-200' : 'text-gray-400'}`}>
+                ({tab.count})
+              </span>
+            </button>
+          ))}
         </div>
 
         {/* Search by Order ID */}
@@ -298,7 +303,9 @@ export default function VerifyPaymentsPage() {
         </div>
 
         {/* Payment List */}
-        {payments.length === 0 ? (
+        {(() => {
+          const filtered = filterTab === 'ALL' ? payments : payments.filter((p) => p.status === filterTab);
+          return filtered.length === 0 ? (
           <div className="bg-white rounded-2xl border border-amber-200/40 p-12 text-center">
             <p className="text-gray-500 font-serif text-lg">Belum ada bukti pembayaran</p>
           </div>
@@ -313,10 +320,10 @@ export default function VerifyPaymentsPage() {
               <div className="col-span-3 text-center">Aksi</div>
             </div>
             <div className="divide-y divide-amber-100">
-              {payments.map((payment) => {
+              {filtered.map((payment) => {
                 const cfg = statusConfig[payment.status] || statusConfig.PENDING;
                 return (
-                  <div key={payment.id}
+                  <div key={payment.orderId}
                     className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 px-6 py-4 hover:bg-amber-50/40 transition-colors items-center"
                   >
                     <div className="md:hidden flex items-center gap-4">
@@ -368,7 +375,7 @@ export default function VerifyPaymentsPage() {
                       {payment.status === 'PENDING' ? (
                         <>
                           <button
-                            onClick={() => openVerifyModal(payment, 'VERIFIED')}
+                            onClick={() => openVerifyModal(payment, 'APPROVED')}
                             className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium rounded-lg transition-colors"
                           >
                             Verifikasi
@@ -382,7 +389,7 @@ export default function VerifyPaymentsPage() {
                         </>
                       ) : (
                         <span className="text-xs text-gray-400 italic">
-                          {payment.status === 'VERIFIED' ? 'Selesai' : 'Ditolak'}
+                          {payment.status === 'APPROVED' ? 'Selesai' : 'Ditolak'}
                         </span>
                       )}
                     </div>
@@ -395,7 +402,7 @@ export default function VerifyPaymentsPage() {
                       )}
                       {payment.status === 'PENDING' && (
                         <>
-                          <button onClick={() => openVerifyModal(payment, 'VERIFIED')}
+                          <button onClick={() => openVerifyModal(payment, 'APPROVED')}
                             className="ml-auto px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium rounded-lg"
                           >
                             Verifikasi
@@ -413,7 +420,8 @@ export default function VerifyPaymentsPage() {
               })}
             </div>
           </div>
-        )}
+        );
+      })()}
 
         {/* Footer */}
         <div className="mt-10 text-center">
@@ -426,10 +434,10 @@ export default function VerifyPaymentsPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl border border-amber-200/40">
             <h3 className="text-lg font-serif font-bold text-[#1a120b] mb-2">
-              {action === 'VERIFIED' ? 'Konfirmasi Verifikasi' : 'Tolak Pembayaran'}
+              {action === 'APPROVED' ? 'Konfirmasi Verifikasi' : 'Tolak Pembayaran'}
             </h3>
             <p className="text-sm text-gray-500 mb-4">
-              {action === 'VERIFIED'
+              {action === 'APPROVED'
                 ? `Yakin ingin memverifikasi bukti pembayaran Pesanan #${selectedPayment.orderId}?`
                 : `Yakin ingin menolak bukti pembayaran Pesanan #${selectedPayment.orderId}?`}
             </p>
@@ -467,14 +475,14 @@ export default function VerifyPaymentsPage() {
                 onClick={handleVerify}
                 disabled={submitting}
                 className={`px-4 py-2 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50 ${
-                  action === 'VERIFIED'
+                  action === 'APPROVED'
                     ? 'bg-emerald-600 hover:bg-emerald-700'
                     : 'bg-red-500 hover:bg-red-600'
                 }`}
               >
                 {submitting
                   ? 'Memproses...'
-                  : action === 'VERIFIED'
+                  : action === 'APPROVED'
                     ? 'Ya, Verifikasi'
                     : 'Ya, Tolak'}
               </button>
