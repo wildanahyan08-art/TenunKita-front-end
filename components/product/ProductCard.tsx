@@ -45,7 +45,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             backgroundSize: '25px 25px',
           }}
         />
-        <div className="relative h-52 sm:h-56 bg-gradient-to-br from-amber-900/20 to-amber-800/10 overflow-hidden">
+        <div className="relative aspect-[4/3] bg-gradient-to-br from-amber-900/20 to-amber-800/10 overflow-hidden">
           <img
             src={imgSrc}
             alt={product.name}

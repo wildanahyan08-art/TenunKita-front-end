@@ -405,7 +405,7 @@ export default function ProductDetailPage() {
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 rows={3}
-                className="w-full px-4 py-3 rounded-xl border border-amber-200/60 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 resize-none"
+                className="w-full px-4 py-3 rounded-xl border border-amber-200/60 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 resize-none text-gray-700"
               />
 
               {/* Submit */}

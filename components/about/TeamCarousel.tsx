@@ -42,7 +42,7 @@ const teamMembers: TeamMember[] = [
     title: "Backend Developer",
     description:
       "Siswa kelas XI RPL 1 yang bertanggung jawab dalam pengembangan dan pengelolaan sistem backend serta database website TenunKita. Memastikan server, API, dan data berjalan dengan lancar.",
-    imageUrl: "/davin.jpeg",
+    imageUrl: "/davin2.jpeg",
     githubUrl: "#",
     twitterUrl: "#",
     youtubeUrl: "#",

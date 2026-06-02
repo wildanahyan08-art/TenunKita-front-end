@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   User,
   Mail,
@@ -12,17 +12,20 @@ import {
   ShoppingBag,
   Users,
   Star,
+  Pencil,
+  X,
+  Save,
+  Loader2,
+  MapPin,
 } from 'lucide-react';
+import { api } from '@/lib/api';
 
-interface Admin {
-  id?: number;
+interface Root {
+  id: number;
   name: string;
-  email?: string;
-  phone?: string;
-  role?: string;
-  address?: string;
-  createdAt?: string;
-  user?: { username: string; role: string };
+  email: string;
+  role: string;
+  address: string;
 }
 
 function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
@@ -52,36 +55,61 @@ function StatCard({ icon, label, value, accent }: { icon: React.ReactNode; label
 }
 
 export default function AdminProfilePage() {
-  const [admin, setAdmin] = useState<Admin | null>(null);
+  const [admin, setAdmin] = useState<Root | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [form, setForm] = useState({ name: '', email: '', address: '' });
+
+  const loadFromLocalStorage = useCallback(() => {
+    const data = localStorage.getItem('user');
+    if (!data) return null;
+    try {
+      const parsed = JSON.parse(data);
+      return { id: parsed.id || 0, name: parsed.name || '', email: parsed.email || '', role: parsed.role || 'ADMIN', address: parsed.address || '' } as Root;
+    } catch { return null; }
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
-    const userData = localStorage.getItem('user');
-    if (!token || !userData) { setIsLoading(false); return; }
+    if (!token) { setIsLoading(false); return; }
 
-    const parsed = JSON.parse(userData);
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tenunkita-production.up.railway.app';
+    const local = loadFromLocalStorage();
+    if (!local) { setIsLoading(false); return; }
 
-    fetch(`${API_URL}/user/profile`, {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: 'no-store',
-    })
-      .then((res) => res.ok ? res.json() : Promise.reject())
-      .then((result) => { setAdmin(result.data || result); setIsLoading(false); })
-      .catch(() => {
-        setAdmin({
-          name: parsed.name,
-          email: parsed.email,
-          role: parsed.role,
-          phone: parsed.phone || '',
-          address: parsed.address,
-          createdAt: parsed.createdAt,
-          user: { username: parsed.email, role: parsed.role },
-        });
-        setIsLoading(false);
-      });
-  }, []);
+    setAdmin(local);
+    setForm({ name: local.name, email: local.email, address: local.address });
+    setIsLoading(false);
+  }, [loadFromLocalStorage]);
+
+  const handleSave = async () => {
+    const token = localStorage.getItem('access_token');
+    if (!token || !admin) return;
+    setSaving(true);
+    setMessage(null);
+    try {
+      await api.updateProfile(token, { name: form.name, email: form.email, address: form.address });
+      const updated: Root = { ...admin, name: form.name, email: form.email, address: form.address };
+      setAdmin(updated);
+      setForm({ name: updated.name, email: updated.email, address: updated.address || '' });
+      setIsEditing(false);
+      setMessage({ type: 'success', text: 'Profil berhasil diperbarui!' });
+      localStorage.setItem('user', JSON.stringify(updated));
+      setTimeout(() => setMessage(null), 3000);
+    } catch {
+      setMessage({ type: 'error', text: 'Gagal memperbarui profil.' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    if (!admin) return;
+    setForm({ name: admin.name, email: admin.email, address: admin.address || '' });
+    setIsEditing(false);
+    setMessage(null);
+  };
 
   if (isLoading) {
     return (
@@ -105,10 +133,31 @@ export default function AdminProfilePage() {
     <div className="max-w-5xl mx-auto space-y-6">
 
       {/* ─── HEADER ─── */}
-      <div>
-        <h1 className="text-2xl font-serif font-bold text-[#1a120b]">Profil Admin</h1>
-        <p className="text-gray-500 text-sm mt-1">Informasi dan pengaturan akun administrator</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-serif font-bold text-[#1a120b]">Profil Admin</h1>
+          <p className="text-gray-500 text-sm mt-1">Informasi dan pengaturan akun administrator</p>
+        </div>
+        <button
+          onClick={() => isEditing ? handleCancel() : setIsEditing(true)}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+            isEditing
+              ? 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-300'
+              : 'bg-amber-700 text-white hover:bg-amber-600 shadow-sm'
+          }`}
+        >
+          {isEditing ? <><X className="w-4 h-4" /> Batal</> : <><Pencil className="w-4 h-4" /> Edit Profil</>}
+        </button>
       </div>
+
+      {message && (
+        <div className={`px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2 ${
+          message.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200'
+        }`}>
+          {message.type === 'success' ? <CheckCircle className="w-4 h-4" /> : <X className="w-4 h-4" />}
+          {message.text}
+        </div>
+      )}
 
       {/* ─── PROFILE CARD ─── */}
       <div className="bg-white rounded-2xl border border-amber-200/40 overflow-hidden">
@@ -158,12 +207,63 @@ export default function AdminProfilePage() {
           <h3 className="font-serif font-bold text-[#1a120b] text-base">Data Admin</h3>
         </div>
         <div className="divide-y divide-amber-50">
-          <InfoRow icon={<User className="w-4 h-4" />} label="Nama Pengguna" value={admin.user?.username || admin.email || '-'} />
-          <InfoRow icon={<Shield className="w-4 h-4" />} label="Peran" value={admin.user?.role || admin.role || '-'} />
-          <InfoRow icon={<Mail className="w-4 h-4" />} label="Email" value={admin.email || '-'} />
-          <InfoRow icon={<Smartphone className="w-4 h-4" />} label="Nomor Telepon" value={admin.phone || '-'} />
-          <InfoRow icon={<Calendar className="w-4 h-4" />} label="Bergabung" value={admin.createdAt ? new Date(admin.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'} />
-          <InfoRow icon={<CheckCircle className="w-4 h-4 text-emerald-600" />} label="Status Akun" value="Aktif" />
+          {isEditing ? (
+            <>
+              <div className="px-5 py-4 space-y-4">
+                <div>
+                  <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-[0.1em]">Nama</label>
+                  <input
+                    type="text"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    className="w-full mt-1 px-3 py-2 border border-amber-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 text-gray-900"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-[0.1em]">Email</label>
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    className="w-full mt-1 px-3 py-2 border border-amber-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 text-gray-900"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-[0.1em]">Alamat</label>
+                  <textarea
+                    value={form.address}
+                    onChange={(e) => setForm({ ...form, address: e.target.value })}
+                    rows={2}
+                    className="w-full mt-1 px-3 py-2 border border-amber-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 resize-none text-gray-900"
+                  />
+                </div>
+              </div>
+              <div className="px-5 py-3 flex items-center justify-end gap-2 bg-amber-50/50">
+                <button
+                  onClick={handleCancel}
+                  disabled={saving}
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="flex items-center gap-2 px-5 py-2 bg-amber-700 text-white rounded-xl text-sm font-medium hover:bg-amber-600 transition-all disabled:opacity-50"
+                >
+                  {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                  Simpan
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <InfoRow icon={<User className="w-4 h-4" />} label="Nama" value={admin.name || '-'} />
+              <InfoRow icon={<Shield className="w-4 h-4" />} label="Peran" value={admin.role || '-'} />
+              <InfoRow icon={<Mail className="w-4 h-4" />} label="Email" value={admin.email || '-'} />
+              <InfoRow icon={<MapPin className="w-4 h-4" />} label="Alamat" value={admin.address || '-'} />
+            </>
+          )}
         </div>
       </div>
 

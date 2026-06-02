@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { api } from "@/lib/api";
 
 interface Category {
   id: number;
@@ -50,7 +51,9 @@ export default function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [cartCount, setCartCount] = useState(0);
   const pathname = usePathname();
 
   // Cek status login dari localStorage
@@ -63,12 +66,14 @@ export default function Navbar() {
       try {
         const user = JSON.parse(userData);
         setUserName(user.name);
+        setUserRole(user.role);
       } catch (error) {
         console.error('Error parsing user:', error);
       }
     } else {
       setIsAuthenticated(false);
       setUserName(null);
+      setUserRole(null);
     }
   }, [pathname]); // Re-check ketika pindah halaman
 
@@ -102,6 +107,17 @@ export default function Navbar() {
     setIsMenuOpen(false);
     setActiveDropdown(null);
   }, [pathname]);
+
+  // Fetch cart count
+  useEffect(() => {
+    if (!isAuthenticated) { setCartCount(0); return; }
+    api.getCart()
+      .then((res) => {
+        const data = 'data' in res ? res.data : res;
+        setCartCount(data.items.length);
+      })
+      .catch(() => setCartCount(0));
+  }, [isAuthenticated, pathname]);
 
   const navLinks = useMemo(() => [
     { name: "Beranda", href: "/" },
@@ -275,7 +291,7 @@ export default function Navbar() {
                 </button>
 
                 <Link
-                  href={isAuthenticated ? "/customer/profile" : "/sign-in"}
+                  href={isAuthenticated ? (userRole === 'ADMIN' ? '/admin/profile' : '/customer/profile') : "/sign-in"}
                   className="hidden md:flex p-2.5 text-amber-100/70 hover:text-amber-300 hover:bg-amber-900/30 rounded-lg transition-all duration-200"
                   aria-label="Akun saya"
                 >
@@ -294,7 +310,7 @@ export default function Navbar() {
                 )}
 
                 <Link
-                  href={isAuthenticated ? "/keranjang" : "/sign-in"}
+                  href={isAuthenticated ? "/customer/cart" : "/sign-in"}
                   className="relative flex items-center gap-2 bg-amber-700 hover:bg-amber-600 text-white px-4 py-2.5 rounded-lg transition-all duration-200 shadow-lg shadow-amber-900/30"
                   aria-label="Keranjang belanja"
                 >
@@ -302,6 +318,11 @@ export default function Navbar() {
                   <span className="hidden sm:inline text-sm font-medium">
                     Keranjang
                   </span>
+                  {cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-md ring-2 ring-white">
+                      {cartCount}
+                    </span>
+                  )}
                 </Link>
 
                 {/* Mobile menu button */}

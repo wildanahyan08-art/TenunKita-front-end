@@ -136,7 +136,7 @@ export default function CustomerCartPage() {
     <div className="min-h-screen bg-[#faf6f0]">
 
       {/* ─── HERO HEADER ─── */}
-      <div className="relative bg-[#1a0f08] overflow-hidden">
+      <div className="relative bg-[#1a0f08] overflow-hidden -mt-[95px]">
         <div className="absolute inset-0 opacity-15"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='6' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='10' r='6' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3Ccircle cx='10' cy='30' r='6' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='30' r='6' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3Ccircle cx='20' cy='20' r='8' fill='none' stroke='%23c4944a' stroke-width='0.8'/%3E%3C/svg%3E")`,
@@ -149,7 +149,7 @@ export default function CustomerCartPage() {
             backgroundSize: '60px 60px',
           }}
         />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 pt-[95px] sm:pt-[95px]">
           <div className="flex items-center gap-2 text-xs mb-4">
             <Link href="/dashboard" className="text-amber-400/60 hover:text-amber-300 transition-colors">Beranda</Link>
             <ChevronRight className="w-3 h-3 text-amber-600/40" />
