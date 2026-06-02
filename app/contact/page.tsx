@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { FaInstagram, FaFacebook, FaTiktok, FaYoutube } from 'react-icons/fa6';
 import { ChevronRight, Mail, MapPin, Phone, Send, Clock, Camera, Globe, Music2, Play, CheckCircle, Loader2 } from 'lucide-react';
 
 export interface Root {
@@ -42,10 +43,10 @@ const contactInfo = [
 ];
 
 const socials = [
-  { icon: Camera, label: 'Instagram', color: 'hover:bg-pink-600' },
-  { icon: Globe, label: 'Facebook', color: 'hover:bg-blue-600' },
-  { icon: Music2, label: 'TikTok', color: 'hover:bg-black' },
-  { icon: Play, label: 'YouTube', color: 'hover:bg-red-600' },
+  { icon: FaInstagram, label: 'Instagram', color: 'hover:bg-pink-600', url: 'https://instagram.com/tenunkita' },
+  { icon: FaFacebook, label: 'Facebook', color: 'hover:bg-blue-600', url: 'https://facebook.com/tenunkita' },
+  { icon: FaTiktok, label: 'TikTok', color: 'hover:bg-black', url: 'https://tiktok.com/@tenunkita' },
+  { icon: FaYoutube, label: 'YouTube', color: 'hover:bg-red-600', url: 'https://youtube.com/@tenunkita' },
 ];
 
 export default function ContactPage() {
@@ -111,7 +112,20 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf6f0]">
+    <div className="min-h-screen bg-[#f0e6d4]">
+      {/* Background batik patterns */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.08]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='10' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='20' cy='20' r='12' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3C/svg%3E")`,
+          backgroundSize: '100px 100px',
+        }}
+      />
+      <div className="fixed inset-0 pointer-events-none opacity-[0.05]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='50' height='50' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23b8863c'/%3E%3C/svg%3E")`,
+          backgroundSize: '70px 70px',
+        }}
+      />
       {/* ─── HERO ─── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#1a120b] via-[#2a1a0e] to-[#1a0f08]">
         <div className="absolute inset-0 opacity-[0.04]">
@@ -141,7 +155,7 @@ export default function ContactPage() {
             </p>
           </div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#faf6f0] to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#f0e6d4] to-transparent" />
       </section>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
@@ -293,9 +307,8 @@ export default function ContactPage() {
                       <Card
                         key={item.title}
                         {...(item.href ? { href: item.href } : {})}
-                        className={`flex items-start gap-4 p-4 rounded-2xl bg-amber-900/20 border border-amber-700/30 hover:bg-amber-800/30 hover:border-amber-600/50 transition-all duration-300 ${
-                          item.href ? 'block no-underline cursor-pointer' : ''
-                        }`}
+                        className={`flex items-start gap-4 p-4 rounded-2xl bg-amber-900/20 border border-amber-700/30 hover:bg-amber-800/30 hover:border-amber-600/50 transition-all duration-300 ${item.href ? 'block no-underline cursor-pointer' : ''
+                          }`}
                       >
                         <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-600 to-amber-700 flex items-center justify-center shrink-0 shadow-sm">
                           <Icon className="w-5 h-5 text-amber-100" />
@@ -325,7 +338,9 @@ export default function ContactPage() {
                   {socials.map((s) => (
                     <a
                       key={s.label}
-                      href="#"
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className={`w-10 h-10 rounded-xl bg-amber-700/40 border border-amber-600/30 flex items-center justify-center text-amber-300 ${s.color} hover:border-transparent hover:text-white hover:scale-105 transition-all duration-300`}
                       title={s.label}
                     >
@@ -343,7 +358,7 @@ export default function ContactPage() {
         <div className="flex items-center gap-3 my-12">
           <div className="flex-1 h-px bg-gradient-to-r from-transparent to-amber-600/40" />
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-amber-600/60 shrink-0">
-            <path d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z" fill="currentColor"/>
+            <path d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z" fill="currentColor" />
           </svg>
           <div className="flex-1 h-px bg-gradient-to-l from-transparent to-amber-600/40" />
         </div>
@@ -391,7 +406,7 @@ export default function ContactPage() {
           <div className="flex items-center gap-3 my-2">
             <div className="flex-1 h-px bg-gradient-to-r from-transparent to-amber-600/40" />
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-amber-600/60 shrink-0">
-              <path d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z" fill="currentColor"/>
+              <path d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z" fill="currentColor" />
             </svg>
             <div className="flex-1 h-px bg-gradient-to-l from-transparent to-amber-600/40" />
           </div>

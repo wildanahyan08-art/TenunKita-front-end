@@ -14,14 +14,171 @@ import {
   ArrowLeft,
   ShieldCheck,
   Truck,
+  Tag,
+  BoxIcon,
+  MessageSquare,
+  User,
+  Calendar,
 } from 'lucide-react';
-import ProductCard from '@/components/product/ProductCard';
-import ReviewCard from '@/components/product/ReviewCard';
 import { api } from '@/lib/api';
 import type { ProductItem, Review } from '@/lib/api';
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
+
+/* Batik SVG background pattern */
+const BATIK_BG = `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L37.5 22.5L60 30L37.5 37.5L30 60L22.5 37.5L0 30L22.5 22.5Z' fill='%23c4944a'/%3E%3C/svg%3E")`;
+
+// Product Card Component untuk Related Products
+function RelatedProductCard({ product, onAddToCart }: { product: ProductItem; onAddToCart: (id: number) => void }) {
+  const [isAdding, setIsAdding] = useState(false);
+  const [imgError, setImgError] = useState(false);
+  const imgSrc = product.imageUrl && !imgError ? product.imageUrl : '/placeholder-product.svg';
+  const stars = Array.from({ length: 5 }, (_, i) => i + 1);
+
+  return (
+    <div className="relative group">
+      <div className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-xl border border-amber-700/30 overflow-hidden hover:border-amber-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-amber-900/20">
+        {/* Batik pattern overlay */}
+        <div className="absolute inset-0 opacity-[0.02] pointer-events-none group-hover:opacity-[0.04] transition-opacity"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='25' height='25' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+            backgroundSize: '25px 25px',
+          }}
+        />
+
+        {/* Image Container */}
+        <Link href={`/customer/products/${product.id}`} className="block relative aspect-square overflow-hidden bg-amber-900/30">
+          <img
+            src={imgSrc}
+            alt={product.name}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={() => setImgError(true)}
+          />
+          {product.stock < 1 && (
+            <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
+              <span className="bg-red-600/90 text-white text-[10px] font-bold px-2 py-1 rounded-full">Habis</span>
+            </div>
+          )}
+          {product.stock > 0 && product.stock <= 3 && (
+            <div className="absolute top-2 right-2 bg-amber-600/90 text-white text-[9px] font-bold px-2 py-1 rounded-full shadow-lg">
+              Sisa {product.stock}
+            </div>
+          )}
+        </Link>
+
+        {/* Content */}
+        <div className="p-3">
+          {/* Category */}
+          {product.category && (
+            <p className="text-[10px] text-amber-400/60 uppercase tracking-wider mb-1 truncate">
+              {product.category.name}
+            </p>
+          )}
+
+          {/* Name */}
+          <Link href={`/customer/products/${product.id}`}>
+            <h3 className="font-serif font-semibold text-amber-100 text-sm line-clamp-2 hover:text-amber-300 transition-colors min-h-[40px]">
+              {product.name}
+            </h3>
+          </Link>
+
+          {/* Rating */}
+          <div className="flex items-center gap-1.5 mt-1.5">
+            <div className="flex items-center gap-0.5">
+              {stars.map((s) => (
+                <Star key={s}
+                  className={`w-2.5 h-2.5 ${s <= Math.round(product.averageRating)
+                    ? 'fill-amber-400 text-amber-400'
+                    : 'text-amber-800/50'}`} />
+              ))}
+            </div>
+            <span className="text-[10px] text-amber-400/50">
+              ({product.totalReviews})
+            </span>
+          </div>
+
+          {/* Price */}
+          <div className="mt-2">
+            <span className="text-sm font-bold text-amber-400">
+              {formatPrice(product.price)}
+            </span>
+          </div>
+
+          {/* Stock Info */}
+          <div className="flex items-center gap-1.5 mt-1.5">
+            <div className={`w-1.5 h-1.5 rounded-full ${product.stock > 0 ? 'bg-emerald-500' : 'bg-red-500'}`} />
+            <span className="text-[9px] text-amber-400/50">
+              {product.stock > 0 ? `${product.stock} tersedia` : 'Habis'}
+            </span>
+          </div>
+
+          {/* Add to Cart Button */}
+          <button
+            onClick={() => onAddToCart(product.id)}
+            disabled={isAdding || product.stock < 1}
+            className="w-full mt-3 py-2 bg-gradient-to-r from-amber-700/50 to-amber-800/50 hover:from-amber-600 hover:to-amber-700 rounded-lg text-[11px] font-semibold text-amber-100 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed border border-amber-700/30"
+          >
+            {isAdding ? 'Menambahkan...' : 'Tambah ke Keranjang'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Review Card Component
+function ReviewItem({ review }: { review: Review }) {
+  const stars = Array.from({ length: 5 }, (_, i) => i + 1);
+
+  return (
+    <div className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-2xl border border-amber-700/30 p-5 shadow-lg overflow-hidden group hover:border-amber-600/50 transition-all duration-300">
+      <div className="absolute inset-0 opacity-[0.02] pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='25' height='25' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+          backgroundSize: '25px 25px',
+        }}
+      />
+      <div className="relative z-10">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-700 to-amber-800 flex items-center justify-center shadow-md">
+              <User className="w-5 h-5 text-amber-200" />
+            </div>
+            <div>
+              <p className="font-semibold text-amber-100 text-sm">
+                {review.user?.name || 'Pengguna TenunKita'}
+              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <div className="flex items-center gap-0.5">
+                  {stars.map((s) => (
+                    <Star key={s}
+                      className={`w-3 h-3 ${s <= review.score
+                        ? 'fill-amber-400 text-amber-400'
+                        : 'text-amber-800/50'}`} />
+                  ))}
+                </div>
+                <span className="text-xs text-amber-400/50">{review.score}/5</span>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-1 text-xs text-amber-400/40">
+            <Calendar className="w-3 h-3" />
+            <span>{new Date(review.createdAt).toLocaleDateString('id-ID')}</span>
+          </div>
+        </div>
+
+        {review.comment && (
+          <div className="mt-3 pt-3 border-t border-amber-700/30">
+            <p className="text-amber-100/70 text-sm leading-relaxed">
+              "{review.comment}"
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function ProductDetailPage() {
   const router = useRouter();
@@ -65,12 +222,12 @@ export default function ProductDetailPage() {
         (p) => p.id !== product.id && p.category?.name === product.category?.name
       );
       setRelated(sameCat.slice(0, 4));
-    }).catch(() => {});
+    }).catch(() => { });
   }, [product]);
 
   useEffect(() => {
     if (!id) return;
-    api.getReviews(id).then(setReviews).catch(() => {}).finally(() => setReviewsLoading(false));
+    api.getReviews(id).then(setReviews).catch(() => { }).finally(() => setReviewsLoading(false));
   }, [id]);
 
   useEffect(() => {
@@ -97,6 +254,15 @@ export default function ProductDetailPage() {
     }
   };
 
+  const handleAddRelatedToCart = async (productId: number) => {
+    try {
+      await api.addToCart(productId);
+      alert('Berhasil ditambahkan ke keranjang!');
+    } catch {
+      alert('Gagal menambahkan ke keranjang.');
+    }
+  };
+
   const handleSubmitRating = async () => {
     if (submittingRating || newScore === 0) return;
     setSubmittingRating(true);
@@ -114,45 +280,40 @@ export default function ProductDetailPage() {
     }
   };
 
+  /* ── Loading state ── */
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#f5efe8] via-[#faf6f0] to-[#f5efe8] flex items-center justify-center relative">
-        <div className="absolute inset-0 pointer-events-none opacity-[0.08]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='10' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='20' cy='20' r='12' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3C/svg%3E")`,
-            backgroundSize: '100px 100px',
-          }}
-        />
+      <div className="min-h-screen bg-gradient-to-b from-[#1a0f08] via-[#2d1a0e] to-[#1a0f08] flex items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
+          style={{ backgroundImage: BATIK_BG, backgroundSize: '60px 60px' }} />
         <div className="text-center">
           <div className="relative w-24 h-24 mx-auto mb-8">
-            <div className="absolute inset-0 border-2 border-amber-600/20 rotate-45 rounded-xl animate-pulse" />
-            <div className="absolute inset-2 border-2 border-amber-600/30 -rotate-12 rounded-xl animate-pulse" style={{ animationDelay: '0.1s' }} />
-            <div className="absolute inset-4 border-2 border-amber-600/40 rotate-12 rounded-xl animate-pulse" style={{ animationDelay: '0.2s' }} />
-            <div className="absolute inset-6 border-2 border-amber-600/60 rounded-lg animate-pulse" style={{ animationDelay: '0.3s' }} />
-            <div className="absolute inset-8 border border-amber-600/40 rounded" />
+            <div className="absolute inset-0 border-2 border-amber-600/30 rotate-45 rounded-xl animate-pulse" />
+            <div className="absolute inset-2 border-2 border-amber-600/40 -rotate-12 rounded-xl animate-pulse" style={{ animationDelay: '0.1s' }} />
+            <div className="absolute inset-4 border-2 border-amber-600/60 rotate-12 rounded-xl animate-pulse" style={{ animationDelay: '0.2s' }} />
+            <div className="absolute inset-[22px] bg-amber-600/20 rounded-lg animate-pulse" style={{ animationDelay: '0.3s' }} />
           </div>
-          <p className="text-amber-800 font-serif text-lg">Memuat detail produk...</p>
-          <div className="w-48 h-0.5 bg-amber-200 mx-auto mt-4 overflow-hidden rounded-full">
-            <div className="w-full h-full bg-amber-600 rounded-full animate-pulse" />
+          <p className="text-amber-300 font-serif text-lg tracking-wide">Memuat detail produk...</p>
+          <div className="w-48 h-0.5 bg-amber-900 mx-auto mt-4 overflow-hidden rounded-full">
+            <div className="w-1/2 h-full bg-amber-500 rounded-full animate-pulse" />
           </div>
         </div>
       </div>
     );
   }
 
+  /* ── Not found state ── */
   if (!product) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#f5efe8] via-[#faf6f0] to-[#f5efe8] flex items-center justify-center relative">
-        <div className="absolute inset-0 pointer-events-none opacity-[0.08]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='10' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='20' cy='20' r='12' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3C/svg%3E")`,
-            backgroundSize: '100px 100px',
-          }}
-        />
+      <div className="min-h-screen bg-gradient-to-b from-[#1a0f08] via-[#2d1a0e] to-[#1a0f08] flex items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
+          style={{ backgroundImage: BATIK_BG, backgroundSize: '60px 60px' }} />
         <div className="text-center">
-          <Package className="w-16 h-16 text-amber-400 mx-auto mb-4" />
-          <h2 className="font-serif font-bold text-2xl text-[#1a120b]">Produk tidak ditemukan</h2>
-          <Link href="/customer/products" className="mt-6 inline-block px-6 py-2.5 bg-amber-700 hover:bg-amber-600 text-white rounded-xl text-sm font-medium transition-all shadow-sm">
+          <Package className="w-16 h-16 text-amber-600/60 mx-auto mb-4" />
+          <h2 className="font-serif font-bold text-2xl text-amber-100">Produk tidak ditemukan</h2>
+          <p className="text-amber-100/50 text-sm mt-2 mb-6">Produk yang Anda cari tidak tersedia.</p>
+          <Link href="/customer/products"
+            className="inline-block px-6 py-2.5 bg-amber-700 hover:bg-amber-600 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-amber-900/40">
             Kembali ke Produk
           </Link>
         </div>
@@ -161,11 +322,25 @@ export default function ProductDetailPage() {
   }
 
   const imgSrc = product.imageUrl && !imgError ? product.imageUrl : '/placeholder-product.svg';
+  const stars = Array.from({ length: 5 }, (_, i) => i + 1);
 
   return (
-    <div className="min-h-screen bg-[#faf6f0]">
-      {/* ─── HERO ─── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#1a120b] via-[#2a1a0e] to-[#1a0f08]">
+    <div className="min-h-screen bg-[#f0e6d4]">
+      {/* Background batik patterns — sama seperti landing page */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.08]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='10' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='20' cy='20' r='12' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3C/svg%3E")`,
+          backgroundSize: '100px 100px',
+        }}
+      />
+      <div className="fixed inset-0 pointer-events-none opacity-[0.05]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='50' height='50' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23b8863c'/%3E%3C/svg%3E")`,
+          backgroundSize: '70px 70px',
+        }}
+      />
+      {/* ─── HERO BANNER ─── */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#1a120b] via-[#2a1a0e] to-[#1a0f08] -mt-[95px]">
         <div className="absolute inset-0 opacity-[0.04]">
           <div
             className="w-full h-full"
@@ -175,7 +350,7 @@ export default function ProductDetailPage() {
             }}
           />
         </div>
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-20 sm:py-28 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 pt-[95px] sm:pt-[95px] relative z-10">
           <div className="text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
               <div className="w-12 h-px bg-amber-600/60" />
@@ -192,165 +367,180 @@ export default function ProductDetailPage() {
             )}
           </div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#faf6f0] to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#f0e6d4] to-transparent" />
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 relative z-10">
-
+      {/* ── MAIN CONTENT ── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt30 relative z-10">
         {/* ─── BREADCRUMB ─── */}
-        <div className="flex items-center gap-2 text-xs text-gray-400 mb-6">
-          <Link href="/" className="hover:text-amber-600 transition-colors">Beranda</Link>
+        <div className="flex items-center gap-2 text-xs text-amber-800/50 mb-6 pt-4">
+          <Link href="/" className="hover:text-amber-700 transition-colors">Beranda</Link>
           <ChevronRight className="w-3 h-3" />
-          <Link href="/customer/products" className="hover:text-amber-600 transition-colors">Produk</Link>
+          <Link href="/customer/products" className="hover:text-amber-700 transition-colors">Produk</Link>
           <ChevronRight className="w-3 h-3" />
           <span className="text-amber-700 font-medium truncate max-w-[200px]">{product.name}</span>
         </div>
 
-        {/* ─── BACK LINK ─── */}
-        <Link
-          href="/customer/products"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-amber-700 transition-colors mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Kembali ke produk
-        </Link>
-
         {/* ─── PRODUCT DETAIL ─── */}
-        <div className="bg-white rounded-2xl border border-amber-200/40 shadow-sm overflow-hidden mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-            {/* Image */}
-            <div className="relative bg-gradient-to-br from-amber-50 to-orange-50 flex items-center justify-center p-8 md:p-12">
-              <img
-                src={imgSrc}
-                alt={product.name}
-                className="w-full max-w-md h-auto object-contain rounded-xl"
-                onError={() => setImgError(true)}
-              />
-              {product.stock < 1 && (
-                <div className="absolute top-6 left-6 bg-red-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-lg">
-                  Stok Habis
+        <div className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-3xl border border-amber-700/30 shadow-xl shadow-amber-900/20 overflow-hidden mb-8">
+          {/* Batik pattern overlay */}
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+              backgroundSize: '40px 40px',
+            }}
+          />
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 relative z-10">
+
+            {/* ── IMAGE PANEL ── */}
+            <div className="relative bg-gradient-to-br from-amber-900/30 to-amber-800/10 p-4 lg:p-6 flex items-center justify-center">
+              <div className="absolute top-4 left-4 w-10 h-10 border-t-2 border-l-2 border-amber-500/40 rounded-tl-lg" />
+              <div className="absolute top-4 right-4 w-10 h-10 border-t-2 border-r-2 border-amber-500/40 rounded-tr-lg" />
+              <div className="absolute bottom-4 left-4 w-10 h-10 border-b-2 border-l-2 border-amber-500/40 rounded-bl-lg" />
+              <div className="absolute bottom-4 right-4 w-10 h-10 border-b-2 border-r-2 border-amber-500/40 rounded-br-lg" />
+
+              <div className="relative w-full">
+                <div className="absolute -inset-8 bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-amber-500/15 rounded-full blur-2xl" />
+                <div className="relative aspect-square rounded-2xl overflow-hidden bg-amber-900/20 shadow-2xl shadow-amber-900/40">
+                  <img
+                    src={imgSrc}
+                    alt={product.name}
+                    className="w-full h-full object-contain object-center p-4 hover:scale-105 transition-transform duration-500"
+                    onError={() => setImgError(true)}
+                  />
+                  {product.stock < 1 && (
+                    <div className="absolute inset-0 bg-black/70 flex items-center justify-center backdrop-blur-sm">
+                      <span className="bg-red-600/90 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg">
+                        Stok Habis
+                      </span>
+                    </div>
+                  )}
+                  {product.stock > 0 && product.stock <= 5 && (
+                    <div className="absolute top-3 right-3 bg-amber-600/95 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg backdrop-blur-sm">
+                      Sisa {product.stock} lagi!
+                    </div>
+                  )}
                 </div>
-              )}
-              {product.stock > 0 && product.stock <= 5 && (
-                <div className="absolute top-6 left-6 bg-amber-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-lg">
-                  Sisa {product.stock}
-                </div>
-              )}
+              </div>
             </div>
 
-            {/* Info */}
-            <div className="p-6 md:p-10 flex flex-col gap-6">
-              {/* Category badge */}
+            {/* ── INFO PANEL ── */}
+            <div className="border-t lg:border-t-0 lg:border-l border-amber-700/30 p-5 lg:p-7 flex flex-col gap-4">
               {product.category && (
                 <div>
-                  <span className="inline-block px-3 py-1 bg-amber-100 text-amber-700 text-[10px] font-bold uppercase tracking-[0.15em] rounded-lg">
+                  <span className="inline-block px-3 py-1 bg-amber-900/40 text-amber-300 text-xs font-semibold rounded-full border border-amber-600/40">
+                    <Tag className="w-3 h-3 inline mr-1" />
                     {product.category.name}
                   </span>
                 </div>
               )}
 
-              {/* Name */}
               <div>
-                <h1 className="font-serif font-bold text-2xl md:text-3xl text-[#1a120b] leading-tight">
+                <h1 className="font-serif font-bold text-xl lg:text-2xl text-amber-100 leading-tight">
                   {product.name}
                 </h1>
-              </div>
-
-              {/* Rating */}
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1">
-                  <Star className={`w-4 h-4 ${product.averageRating > 0 ? 'fill-amber-500 text-amber-500' : 'text-gray-300'}`} />
-                  <span className="text-sm font-semibold text-[#1a120b]">
-                    {product.averageRating > 0 ? product.averageRating.toFixed(1) : '-'}
+                <div className="flex items-center gap-3 mt-2">
+                  <div className="flex items-center gap-0.5">
+                    {stars.map((s) => (
+                      <Star key={s}
+                        className={`w-3.5 h-3.5 ${s <= Math.round(product.averageRating)
+                          ? 'fill-amber-400 text-amber-400'
+                          : 'text-amber-800/50'}`} />
+                    ))}
+                  </div>
+                  <span className="text-sm font-medium text-amber-300">
+                    {product.averageRating > 0 ? product.averageRating.toFixed(1) : '—'}
                   </span>
+                  <span className="text-amber-700/50">•</span>
+                  <span className="text-sm text-amber-100/50">{product.totalReviews} ulasan</span>
                 </div>
-                <span className="text-gray-300">|</span>
-                <span className="text-sm text-gray-500">{product.totalReviews} ulasan</span>
               </div>
 
-              {/* Price */}
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-amber-700">
+              <div className="bg-gradient-to-r from-amber-900/30 to-transparent rounded-xl p-4 -mx-4 px-4">
+                <p className="text-xs text-amber-400/60 uppercase tracking-wider mb-1">Harga</p>
+                <span className="text-3xl lg:text-4xl font-bold text-amber-400">
                   {formatPrice(product.price)}
                 </span>
               </div>
 
-              {/* Description */}
               <div>
-                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Deskripsi</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
+                <h3 className="text-xs font-semibold text-amber-400/60 uppercase tracking-wider mb-2">Deskripsi</h3>
+                <p className="text-amber-100/70 text-sm leading-relaxed">
                   {product.description || 'Tidak ada deskripsi untuk produk ini.'}
                 </p>
               </div>
 
-              {/* Stock */}
-              <div className="flex items-center gap-2 text-sm">
-                <span className="text-gray-500">Stok:</span>
-                <span className={`font-semibold ${product.stock > 0 ? 'text-emerald-600' : 'text-red-500'}`}>
-                  {product.stock > 0 ? `${product.stock} tersedia` : 'Habis'}
+              <div className="flex items-center gap-2">
+                <BoxIcon className="w-4 h-4 text-amber-500/60" />
+                <span className="text-sm text-amber-100/60">
+                  Stok: <span className={`font-semibold ${product.stock > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {product.stock > 0 ? `${product.stock} tersedia` : 'Habis'}
+                  </span>
                 </span>
               </div>
 
-              {/* Quantity */}
               {product.stock > 0 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Jumlah</h3>
+                  <h3 className="text-xs font-semibold text-amber-400/60 uppercase tracking-wider mb-2">Jumlah</h3>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                       disabled={quantity <= 1}
-                      className="w-10 h-10 rounded-xl border border-amber-200/60 flex items-center justify-center hover:bg-amber-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                      className="w-9 h-9 rounded-full border border-amber-600/40 bg-amber-900/20 flex items-center justify-center hover:bg-amber-800/30 hover:border-amber-500/60 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                     >
-                      <Minus className="w-4 h-4 text-[#1a120b]" />
+                      <Minus className="w-3.5 h-3.5 text-amber-300" />
                     </button>
-                    <span className="w-14 text-center font-bold text-lg text-[#1a120b]">{quantity}</span>
+                    <span className="w-10 text-center font-semibold text-lg text-amber-200">{quantity}</span>
                     <button
                       onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
                       disabled={quantity >= product.stock}
-                      className="w-10 h-10 rounded-xl border border-amber-200/60 flex items-center justify-center hover:bg-amber-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                      className="w-9 h-9 rounded-full border border-amber-600/40 bg-amber-900/20 flex items-center justify-center hover:bg-amber-800/30 hover:border-amber-500/60 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                     >
-                      <Plus className="w-4 h-4 text-[#1a120b]" />
+                      <Plus className="w-3.5 h-3.5 text-amber-300" />
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* Add to cart button */}
               <button
                 onClick={handleAddToCart}
                 disabled={isAdding || product.stock < 1}
-                className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl text-sm font-bold transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full mt-2"
               >
                 {added ? (
-                  <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 w-full py-3.5 rounded-xl flex items-center justify-center gap-2">
-                    <Check className="w-5 h-5" /> Ditambahkan ke Keranjang
+                  <span className="flex items-center justify-center gap-2 w-full py-3 bg-emerald-900/40 text-emerald-300 border border-emerald-700/50 rounded-xl font-semibold text-sm transition-all">
+                    <Check className="w-4 h-4" /> Ditambahkan ke Keranjang
                   </span>
                 ) : isAdding ? (
-                  <span className="bg-amber-100 text-amber-400 w-full py-3.5 rounded-xl flex items-center justify-center gap-2">
-                    <div className="w-5 h-5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+                  <span className="flex items-center justify-center gap-2 w-full py-3 bg-amber-800/40 text-amber-300 border border-amber-600/50 rounded-xl font-semibold text-sm">
+                    <div className="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
                     Menambahkan...
                   </span>
                 ) : (
-                  <span className="bg-amber-700 hover:bg-amber-600 text-white w-full py-3.5 rounded-xl flex items-center justify-center gap-2">
-                    <ShoppingCart className="w-5 h-5" /> Tambahkan ke Keranjang
+                  <span className="flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white rounded-xl font-semibold text-sm transition-all shadow-lg shadow-amber-900/40">
+                    <ShoppingCart className="w-4 h-4" /> Tambahkan ke Keranjang
                   </span>
                 )}
               </button>
 
-              {/* Info badges */}
-              <div className="grid grid-cols-2 gap-3 pt-2">
-                <div className="flex items-center gap-2.5 p-3 bg-amber-50/50 rounded-xl border border-amber-100/60">
-                  <Truck className="w-4 h-4 text-amber-600 shrink-0" />
+              <div className="grid grid-cols-2 gap-2 pt-2">
+                <div className="flex items-center gap-2 p-2.5 bg-amber-900/20 rounded-xl border border-amber-700/30">
+                  <div className="w-7 h-7 rounded-full bg-amber-800/40 flex items-center justify-center shrink-0">
+                    <Truck className="w-3.5 h-3.5 text-amber-400" />
+                  </div>
                   <div>
-                    <p className="text-xs font-semibold text-[#1a120b]">Gratis Ongkir</p>
-                    <p className="text-[10px] text-gray-400">Min. belanja Rp150rb</p>
+                    <p className="text-[11px] font-semibold text-amber-200">Gratis Ongkir</p>
+                    <p className="text-[9px] text-amber-400/50">Min. belanja Rp150rb</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2.5 p-3 bg-amber-50/50 rounded-xl border border-amber-100/60">
-                  <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
+                <div className="flex items-center gap-2 p-2.5 bg-amber-900/20 rounded-xl border border-amber-700/30">
+                  <div className="w-7 h-7 rounded-full bg-amber-800/40 flex items-center justify-center shrink-0">
+                    <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                  </div>
                   <div>
-                    <p className="text-xs font-semibold text-[#1a120b]">Produk Asli</p>
-                    <p className="text-[10px] text-gray-400">Garansi 100%</p>
+                    <p className="text-[11px] font-semibold text-amber-200">Produk Asli</p>
+                    <p className="text-[9px] text-amber-400/50">Garansi 100%</p>
                   </div>
                 </div>
               </div>
@@ -358,136 +548,135 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* ─── REVIEWS ─── */}
-        <div className="mb-8">
+        {/* ── REVIEWS SECTION ── */}
+        <div className="mb-10">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-1 h-5 bg-amber-600 rounded-full" />
-            <h2 className="font-serif font-bold text-xl text-[#1a120b]">
-              Ulasan ({product.totalReviews})
-            </h2>
-            <div className="flex-1 h-px bg-gradient-to-r from-amber-200/60 to-transparent" />
+            <div className="w-8 h-8 rounded-full bg-amber-900/40 flex items-center justify-center">
+              <MessageSquare className="w-4 h-4 text-amber-400" />
+            </div>
+            <h2 className="font-serif font-bold text-xl text-[#1a120b]">Ulasan Pembeli</h2>
+            <span className="px-2.5 py-0.5 bg-amber-100 border border-amber-200 rounded-full text-xs font-bold text-amber-700">
+              {product.totalReviews}
+            </span>
+            <div className="flex-1 h-px bg-gradient-to-r from-amber-300/50 to-transparent" />
             <button
               onClick={() => setShowRatingForm(!showRatingForm)}
-              className="shrink-0 px-4 py-2 bg-amber-700 hover:bg-amber-600 text-white text-xs font-bold rounded-xl transition-all shadow-sm"
-            >
+              className="shrink-0 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-amber-900/20">
               {showRatingForm ? 'Batal' : '+ Tulis Ulasan'}
             </button>
           </div>
 
+          {/* Rating form */}
           {showRatingForm && (
-            <div className="bg-white rounded-xl border border-amber-200/40 p-6 mb-6">
-              <h3 className="font-semibold text-sm text-[#1a120b] mb-4">Beri Rating & Ulasan</h3>
-
-              {/* Star selector */}
-              <div className="flex items-center gap-1 mb-4">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    onClick={() => setNewScore(star)}
-                    className="p-0.5 transition-all"
-                  >
-                    <Star
-                      className={`w-7 h-7 ${
-                        star <= newScore ? 'fill-amber-500 text-amber-500' : 'text-gray-300'
-                      }`}
-                    />
-                  </button>
-                ))}
-                <span className="text-xs text-gray-400 ml-2">
-                  {newScore > 0 ? `${newScore}/5` : 'Pilih rating'}
-                </span>
-              </div>
-
-              {/* Comment */}
-              <textarea
-                placeholder="Tulis ulasan Anda..."
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                rows={3}
-                className="w-full px-4 py-3 rounded-xl border border-amber-200/60 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 resize-none text-gray-700"
+            <div className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-2xl border border-amber-700/30 p-6 mb-8 shadow-xl overflow-hidden">
+              <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+                  backgroundSize: '30px 30px',
+                }}
               />
-
-              {/* Submit */}
-              <div className="flex justify-end mt-4">
-                <button
-                  onClick={handleSubmitRating}
-                  disabled={submittingRating || newScore === 0}
-                  className="px-6 py-2.5 bg-amber-700 hover:bg-amber-600 disabled:bg-amber-300 text-white text-sm font-bold rounded-xl transition-all shadow-sm disabled:cursor-not-allowed"
-                >
-                  {submittingRating ? (
-                    <span className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Mengirim...
-                    </span>
-                  ) : (
-                    'Kirim Ulasan'
-                  )}
-                </button>
+              <div className="relative z-10">
+                <h3 className="font-serif font-semibold text-amber-100 mb-4 flex items-center gap-2">
+                  <Star className="w-4 h-4 text-amber-400" />
+                  Beri Rating & Ulasan
+                </h3>
+                <div className="flex items-center gap-2 mb-4">
+                  {stars.map((star) => (
+                    <button key={star} type="button" onClick={() => setNewScore(star)} className="p-1 transition-transform hover:scale-110">
+                      <Star className={`w-8 h-8 transition-all ${star <= newScore ? 'fill-amber-500 text-amber-500' : 'text-amber-700/40'}`} />
+                    </button>
+                  ))}
+                  <span className="text-sm text-amber-400/60 ml-2">
+                    {newScore > 0 ? `${newScore}/5` : 'Pilih rating'}
+                  </span>
+                </div>
+                <textarea
+                  placeholder="Tulis ulasan Anda..."
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  rows={3}
+                  className="w-full px-4 py-3 rounded-xl bg-amber-900/20 border border-amber-700/40 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 resize-none text-amber-100 placeholder:text-amber-400/40"
+                />
+                <div className="flex justify-end mt-4">
+                  <button
+                    onClick={handleSubmitRating}
+                    disabled={submittingRating || newScore === 0}
+                    className="px-6 py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 disabled:from-amber-800 disabled:to-amber-800 disabled:text-amber-400/40 text-white text-sm font-bold rounded-xl transition-all shadow-md disabled:cursor-not-allowed">
+                    {submittingRating ? (
+                      <span className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Mengirim...
+                      </span>
+                    ) : 'Kirim Ulasan'}
+                  </button>
+                </div>
               </div>
             </div>
           )}
 
+          {/* Reviews list */}
           {reviewsLoading ? (
-            <div className="flex items-center gap-3 text-sm text-gray-400">
-              <div className="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+            <div className="flex items-center justify-center gap-3 text-sm text-amber-400/60 py-12">
+              <div className="w-5 h-5 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
               Memuat ulasan...
             </div>
           ) : reviews.length === 0 ? (
-            <div className="text-center py-12 bg-white rounded-xl border border-amber-200/40">
-              <Star className="w-12 h-12 text-amber-300 mx-auto mb-3" />
-              <p className="text-gray-500 text-sm">Belum ada ulasan untuk produk ini.</p>
-              <p className="text-gray-400 text-xs mt-1">Jadilah yang pertama memberikan ulasan!</p>
+            <div className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-2xl border border-amber-700/30 py-16 text-center overflow-hidden">
+              <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,
+                  backgroundSize: '30px 30px',
+                }}
+              />
+              <div className="relative z-10">
+                <div className="w-16 h-16 rounded-full bg-amber-900/30 flex items-center justify-center mx-auto mb-4">
+                  <MessageSquare className="w-8 h-8 text-amber-500/50" />
+                </div>
+                <p className="text-amber-200/60 text-sm">Belum ada ulasan untuk produk ini.</p>
+                <p className="text-amber-400/40 text-xs mt-1">Jadilah yang pertama memberikan ulasan!</p>
+              </div>
             </div>
           ) : (
             <div className="space-y-4">
               {reviews.map((review) => (
-                <ReviewCard key={review.id} review={review} />
+                <ReviewItem key={review.id} review={review} />
               ))}
             </div>
           )}
         </div>
 
-        {/* ─── RELATED PRODUCTS ─── */}
+        {/* ── RELATED PRODUCTS ── */}
         {related.length > 0 && (
-          <>
+          <div className="mb-10">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-1 h-5 bg-amber-600 rounded-full" />
+              <div className="w-1 h-6 bg-gradient-to-b from-amber-600 to-amber-500 rounded-full" />
               <h2 className="font-serif font-bold text-xl text-[#1a120b]">Produk Terkait</h2>
-              <div className="flex-1 h-px bg-gradient-to-r from-amber-200/60 to-transparent" />
+              <div className="flex-1 h-px bg-gradient-to-r from-amber-300/50 to-transparent" />
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 mb-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
               {related.map((p) => (
-                <ProductCard
+                <RelatedProductCard
                   key={p.id}
                   product={p}
-                  onAddToCart={async (productId) => {
-                    try {
-                      await api.addToCart(productId);
-                      setCartCount((c) => c + 1);
-                    } catch {
-                      alert('Gagal menambahkan ke keranjang.');
-                    }
-                  }}
+                  onAddToCart={handleAddRelatedToCart}
                 />
               ))}
             </div>
-          </>
+          </div>
         )}
 
-        {/* ─── FOOTER ─── */}
-        <div className="mt-6 mb-8 text-center">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-12 h-px bg-amber-300/40" />
-            <svg width="10" height="10" viewBox="0 0 16 16" fill="none" className="text-amber-400/40">
-              <path d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z" fill="currentColor"/>
+        {/* ── FOOTER ORNAMENT ── */}
+        <div className="text-center py-8 border-t border-amber-300/40 mt-4">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <div className="w-16 h-px bg-amber-600/30" />
+            <svg width="12" height="12" viewBox="0 0 16 16" className="text-amber-600/50">
+              <path d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z" fill="currentColor" />
             </svg>
-            <div className="w-12 h-px bg-amber-300/40" />
+            <div className="w-16 h-px bg-amber-600/30" />
           </div>
-          <p className="text-gray-400 text-xs tracking-wider">TenunKita — Warisan Budaya Nusantara</p>
-          <p className="text-gray-400/60 text-[11px] mt-1">&copy; {new Date().getFullYear()} TenunKita. All rights reserved.</p>
+          <p className="text-amber-800/50 text-xs tracking-widest uppercase">TenunKita — Warisan Budaya Nusantara</p>
+          <p className="text-amber-700/40 text-[11px] mt-1">&copy; {new Date().getFullYear()} TenunKita. All rights reserved.</p>
         </div>
-
       </div>
     </div>
   );
