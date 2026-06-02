@@ -37,8 +37,8 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   const imgSrc = product.imageUrl && !imgError ? product.imageUrl : '/placeholder-product.svg';
 
   return (
-    <Link href={`/customer/products/${product.id}`} className="block group">
-      <div className="relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-2xl border border-amber-700/30 overflow-hidden hover:shadow-lg hover:shadow-amber-900/20 hover:border-amber-600/50 transition-all duration-300 flex flex-col">
+    <Link href={`/customer/products/${product.id}`} className="block group h-full">
+      <div className="h-full relative bg-gradient-to-br from-[#1a0f08] to-[#2d1a0e] rounded-2xl border border-amber-700/30 overflow-hidden hover:shadow-lg hover:shadow-amber-900/20 hover:border-amber-600/50 transition-all duration-300 flex flex-col">
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='25' height='25' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23c4944a'/%3E%3C/svg%3E")`,

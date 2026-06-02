@@ -107,8 +107,26 @@ export const api = {
     return authFetch(`/cart/${cartId}`, { method: 'DELETE' });
   },
 
-  async checkout(): Promise<CheckoutResponse> {
-    return authFetch('/orders/checkout', { method: 'POST' });
+  async checkout(items?: { productId: number; quantity: number; price: number }[]): Promise<CheckoutResponse> {
+    return authFetch('/orders/checkout', {
+      method: 'POST',
+      body: items ? JSON.stringify({ items }) : undefined,
+    });
+  },
+
+  async downloadReceipt(orderId: number): Promise<Blob> {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+    if (!token) throw new Error('Belum login');
+
+    const res = await fetch(`${API_URL}/orders/${orderId}/receipt`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!res.ok) {
+      throw new Error('Gagal mengunduh struk');
+    }
+
+    return res.blob();
   },
 
   async uploadPaymentProof(orderId: number, file: File): Promise<PaymentProofResponse> {

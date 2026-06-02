@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+
 import {
   CheckCircle,
   ChevronRight,
@@ -12,15 +13,17 @@ import {
   ClipboardList,
   Banknote,
   Info,
+  Download,
+  Loader2,
 } from 'lucide-react';
 import { api } from '@/lib/api';
-import type { CheckoutResponse } from '@/lib/api';
+import type { CheckoutResponse, CartItemData } from '@/lib/api';
 
 const BatikDivider = () => (
   <div className="flex items-center gap-2">
     <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-300/60 to-transparent" />
     <svg width="10" height="10" viewBox="0 0 16 16" fill="none" className="text-amber-500/50 shrink-0">
-      <path d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z" fill="currentColor"/>
+      <path d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z" fill="currentColor" />
     </svg>
     <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-300/60 to-transparent" />
   </div>
@@ -34,6 +37,28 @@ export default function CustomerCheckoutPage() {
   const [result, setResult] = useState<CheckoutResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownloadReceipt = useCallback(async (orderId: number) => {
+    if (isDownloading) return;
+    setIsDownloading(true);
+    try {
+      const { api } = await import('@/lib/api');
+      const blob = await api.downloadReceipt(orderId);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `struk-pesanan-${orderId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Gagal mengunduh struk');
+    } finally {
+      setIsDownloading(false);
+    }
+  }, [isDownloading]);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -47,10 +72,41 @@ export default function CustomerCheckoutPage() {
     }
   }, [router]);
 
+  const checkoutCalled = useRef(false);
+
   useEffect(() => {
+    if (checkoutCalled.current) return;
+    checkoutCalled.current = true;
+
     const processCheckout = async () => {
       try {
-        const res = await api.checkout();
+        // Fetch cart items first
+        const cartRes = await api.getCart();
+        const raw = cartRes as { data?: { items: CartItemData[] }; items?: CartItemData[] };
+        const rawItems = raw.data?.items ?? raw.items ?? [];
+
+        if (rawItems.length === 0) {
+          throw new Error('Keranjang belanja Anda kosong');
+        }
+
+        // Group/merge items by productId to avoid duplicate rows
+        const grouped: Record<number, { productId: number; quantity: number; price: number }> = {};
+        rawItems.forEach((item: CartItemData) => {
+          const pid = item.productId;
+          if (grouped[pid]) {
+            grouped[pid].quantity += item.quantity;
+          } else {
+            grouped[pid] = {
+              productId: pid,
+              quantity: item.quantity,
+              price: item.product.price,
+            };
+          }
+        });
+
+        const checkoutItems = Object.values(grouped);
+
+        const res = await api.checkout(checkoutItems);
         setResult(res);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Gagal memproses checkout');
@@ -191,19 +247,31 @@ export default function CustomerCheckoutPage() {
             <p className="text-xs text-gray-500 mt-1">
               Segera unggah bukti pembayaran Anda di halaman pesanan untuk mempercepat proses verifikasi.
             </p>
-            </div>
           </div>
+        </div>
 
-          {/* ─── ACTIONS ─── */}
-          <div className="mt-6 flex flex-col sm:flex-row items-center gap-3">
-            <Link
-              href="/customer/orders"
-              className="w-full sm:w-auto px-6 py-3 bg-amber-700 hover:bg-amber-600 text-white rounded-xl font-medium transition-all shadow-md text-center flex items-center justify-center gap-2"
-            >
-              <ClipboardList className="w-4 h-4" /> Lihat Pesanan Saya
-            </Link>
-            <Link
-              href="/customer/products"
+        {/* ─── ACTIONS ─── */}
+        <div className="mt-6 flex flex-col sm:flex-row items-center gap-3">
+          <button
+            type="button"
+            onClick={() => result && handleDownloadReceipt(result.orderId)}
+            disabled={isDownloading}
+            className="w-full sm:w-auto px-6 py-3 bg-amber-800 hover:bg-amber-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-all shadow-md flex items-center justify-center gap-2"
+          >
+            {isDownloading ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Mengunduh...</>
+            ) : (
+              <><Download className="w-4 h-4" /> Unduh Struk</>
+            )}
+          </button>
+          <Link
+            href="/customer/orders"
+            className="w-full sm:w-auto px-6 py-3 bg-amber-700 hover:bg-amber-600 text-white rounded-xl font-medium transition-all shadow-md text-center flex items-center justify-center gap-2"
+          >
+            <ClipboardList className="w-4 h-4" /> Lihat Pesanan Saya
+          </Link>
+          <Link
+            href="/customer/products"
             className="w-full sm:w-auto px-6 py-3 border border-amber-200 text-amber-700 hover:bg-amber-50 rounded-xl font-medium transition-all text-center flex items-center justify-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" /> Belanja Lagi

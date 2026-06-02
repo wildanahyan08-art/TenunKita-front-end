@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Package, ChevronRight, Clock, AlertCircle, ShoppingBag, CreditCard, Upload, CheckCircle } from 'lucide-react';
+import { Package, ChevronRight, Clock, AlertCircle, ShoppingBag, CreditCard, Upload, CheckCircle, Download, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
 import type { PaymentProofData } from '@/lib/api';
 
@@ -93,7 +93,28 @@ export default function CustomerOrderPage() {
   const [filter, setFilter] = useState<OrderStatus | 'ALL'>('ALL');
   const [proofStatus, setProofStatus] = useState<Record<number, string>>({});
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [downloadingId, setDownloadingId] = useState<number | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const handleDownloadReceipt = useCallback(async (orderId: number) => {
+    if (downloadingId !== null) return;
+    setDownloadingId(orderId);
+    try {
+      const blob = await api.downloadReceipt(orderId);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `struk-pesanan-${orderId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Gagal mengunduh struk');
+    } finally {
+      setDownloadingId(null);
+    }
+  }, [downloadingId]);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -436,7 +457,21 @@ export default function CustomerOrderPage() {
                         <Upload className="w-3 h-3" /> Bayar
                       </Link>
                     )}
-                    <span className={`text-sm font-bold text-amber-700 ${!isPaid && proofSt !== 'PENDING' && proofSt !== 'APPROVED' ? '' : 'ml-auto'}`}>
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadReceipt(order.id)}
+                      disabled={downloadingId === order.id}
+                      className={`text-[11px] font-semibold px-3 py-1.5 bg-amber-800 hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-all flex items-center gap-1.5 shadow-sm ${
+                        isPaid || proofSt === 'PENDING' || proofSt === 'APPROVED' ? 'ml-auto' : ''
+                      }`}
+                    >
+                      {downloadingId === order.id ? (
+                        <><Loader2 className="w-3 h-3 animate-spin" /> Mengunduh...</>
+                      ) : (
+                        <><Download className="w-3 h-3" /> Struk</>
+                      )}
+                    </button>
+                    <span className="text-sm font-bold text-amber-700">
                       {formatPrice(order.totalAmount)}
                     </span>
                   </div>

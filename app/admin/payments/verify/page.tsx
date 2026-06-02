@@ -442,9 +442,9 @@ export default function VerifyPaymentsPage() {
                 : `Yakin ingin menolak bukti pembayaran Pesanan #${selectedPayment.orderId}?`}
             </p>
 
-            <div className="bg-amber-50 rounded-xl p-3 mb-4 space-y-1 text-sm">
-              <p><span className="text-gray-500">ID:</span> #{selectedPayment.id}</p>
-              <p><span className="text-gray-500">Pesanan:</span> #{selectedPayment.orderId}</p>
+            <div className="bg-amber-50 rounded-xl p-3 mb-4 space-y-1 text-sm text-[#1a120b]">
+              <p><span className="text-gray-500">ID:</span> <span className="font-semibold">#{selectedPayment.id}</span></p>
+              <p><span className="text-gray-500">Pesanan:</span> <span className="font-semibold">#{selectedPayment.orderId}</span></p>
               {selectedPayment.fileUrl && (
                 <p>
                   <a href={selectedPayment.fileUrl} target="_blank" rel="noopener noreferrer"

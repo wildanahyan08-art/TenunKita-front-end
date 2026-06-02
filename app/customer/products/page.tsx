@@ -249,8 +249,8 @@ export default function CustomerProductsPage() {
             <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center">
               <Store className="w-3 h-3 text-amber-700" />
             </div>
-            <p className="text-sm text-amber-100/50">
-              Menampilkan <span className="font-semibold text-amber-200">{filtered.length}</span> produk
+            <p className="text-sm text-amber-900">
+              Menampilkan <span className="font-semibold text-amber-500">{filtered.length}</span> Produk
               {activeCategory && (
                 <span className="text-amber-600"> — {categories.find(c => c.slug === activeCategory)?.name || activeCategory}</span>
               )}

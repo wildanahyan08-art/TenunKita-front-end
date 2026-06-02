@@ -12,6 +12,7 @@ import {
   FileText,
   Image,
   Loader2,
+  Download,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import type { PaymentProofResponse } from '@/lib/api';
@@ -36,6 +37,27 @@ function UploadFormContent() {
   const [isUploading, setIsUploading] = useState(false);
   const [result, setResult] = useState<PaymentProofResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownloadReceipt = useCallback(async () => {
+    if (!orderId || isDownloading) return;
+    setIsDownloading(true);
+    try {
+      const blob = await api.downloadReceipt(Number(orderId));
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `receipt-${orderId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Gagal mengunduh struk');
+    } finally {
+      setIsDownloading(false);
+    }
+  }, [orderId, isDownloading]);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -134,6 +156,18 @@ function UploadFormContent() {
           </div>
         </div>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
+          <button
+            type="button"
+            onClick={handleDownloadReceipt}
+            disabled={isDownloading}
+            className="w-full sm:w-auto px-6 py-3 bg-amber-800 hover:bg-amber-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-all shadow-md flex items-center justify-center gap-2"
+          >
+            {isDownloading ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Mengunduh...</>
+            ) : (
+              <><Download className="w-4 h-4" /> Unduh Struk</>
+            )}
+          </button>
           <Link
             href="/customer/orders"
             className="w-full sm:w-auto px-6 py-3 bg-amber-700 hover:bg-amber-600 text-white rounded-xl font-medium transition-all shadow-md text-center"
@@ -259,6 +293,18 @@ function UploadFormContent() {
               <>
                 <Upload className="w-4 h-4" /> Unggah Bukti Pembayaran
               </>
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={handleDownloadReceipt}
+            disabled={isDownloading}
+            className="w-full sm:w-auto px-6 py-3 bg-amber-800 hover:bg-amber-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-all shadow-md flex items-center justify-center gap-2"
+          >
+            {isDownloading ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Mengunduh...</>
+            ) : (
+              <><Download className="w-4 h-4" /> Unduh Struk</>
             )}
           </button>
           <Link
