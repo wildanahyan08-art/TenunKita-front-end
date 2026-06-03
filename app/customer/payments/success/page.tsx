@@ -1,7 +1,7 @@
 // app/customer/payments/success/page.tsx
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle, ShoppingBag, Download, Home, Receipt, Clock } from 'lucide-react';
@@ -36,26 +36,28 @@ export default function PaymentSuccessPage() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('orderId');
   const hasRedirected = useRef(false);
+  const redirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const [order, setOrder] = useState<OrderData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(5);
 
-  // Fetch order data - useEffect without redirect
+  // Fetch order data
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-      router.push('/sign-in');
-      return;
-    }
-
-    if (!orderId) {
-      router.push('/customer/orders');
-      return;
-    }
-
     const fetchOrder = async () => {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        // Use setTimeout to avoid rendering side effects
+        setTimeout(() => router.push('/sign-in'), 0);
+        return;
+      }
+
+      if (!orderId) {
+        setTimeout(() => router.push('/customer/orders'), 0);
+        return;
+      }
+
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tenunkita-production.up.railway.app';
 
       try {
@@ -79,9 +81,15 @@ export default function PaymentSuccessPage() {
     };
 
     fetchOrder();
+    // Cleanup function
+    return () => {
+      if (redirectTimeoutRef.current) {
+        clearTimeout(redirectTimeoutRef.current);
+      }
+    };
   }, [orderId, router]);
 
-  // Separate useEffect for countdown and redirect - using useRef to prevent multiple redirects
+  // Countdown and redirect effect
   useEffect(() => {
     if (isLoading || error || hasRedirected.current) return;
 
@@ -90,7 +98,7 @@ export default function PaymentSuccessPage() {
         if (prev <= 1) {
           clearInterval(timer);
           // Use setTimeout to move navigation out of the render phase
-          setTimeout(() => {
+          redirectTimeoutRef.current = setTimeout(() => {
             if (!hasRedirected.current) {
               hasRedirected.current = true;
               router.push('/customer/orders');
@@ -102,7 +110,12 @@ export default function PaymentSuccessPage() {
       });
     }, 1000);
 
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+      if (redirectTimeoutRef.current) {
+        clearTimeout(redirectTimeoutRef.current);
+      }
+    };
   }, [isLoading, error, router]);
 
   const handleDownloadInvoice = async () => {
@@ -134,6 +147,7 @@ export default function PaymentSuccessPage() {
     }
   };
 
+  // Loading state
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#faf6f0] flex items-center justify-center">
@@ -153,6 +167,7 @@ export default function PaymentSuccessPage() {
     );
   }
 
+  // Error state
   if (error) {
     return (
       <div className="min-h-screen bg-[#faf6f0] flex items-center justify-center p-6">
@@ -177,6 +192,7 @@ export default function PaymentSuccessPage() {
     );
   }
 
+  // Success state
   return (
     <div className="min-h-screen bg-[#faf6f0]">
       {/* Hero Header */}
