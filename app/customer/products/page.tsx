@@ -12,7 +12,7 @@ const BatikDivider = () => (
   <div className="flex items-center gap-3">
     <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-300/60 to-transparent" />
     <svg width="12" height="12" viewBox="0 0 16 16" fill="none" className="text-amber-500/50 shrink-0">
-      <path d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z" fill="currentColor"/>
+      <path d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z" fill="currentColor" />
     </svg>
     <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-300/60 to-transparent" />
   </div>
@@ -109,7 +109,20 @@ export default function CustomerProductsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#faf6f0] flex items-center justify-center">
+      <div className="min-h-screen bg-[#f0e6d4] relative flex items-center justify-center">
+        {/* Background batik patterns */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.08]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='10' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='20' cy='20' r='12' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3C/svg%3E")`,
+            backgroundSize: '100px 100px',
+          }}
+        />
+        <div className="absolute inset-0 pointer-events-none opacity-[0.05]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='50' height='50' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23b8863c'/%3E%3C/svg%3E")`,
+            backgroundSize: '70px 70px',
+          }}
+        />
         <div className="text-center">
           <div className="relative w-24 h-24 mx-auto mb-8">
             <div className="absolute inset-0 border-2 border-amber-600/20 rotate-45 rounded-xl animate-pulse" />
@@ -128,7 +141,20 @@ export default function CustomerProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf6f0]">
+    <div className="min-h-screen bg-[#f0e6d4] relative">
+      {/* Background batik patterns — sama seperti landing page */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.08]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='10' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='10' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='30' cy='30' r='8' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3Ccircle cx='20' cy='20' r='12' fill='none' stroke='%23b8863c' stroke-width='0.8'/%3E%3C/svg%3E")`,
+          backgroundSize: '100px 100px',
+        }}
+      />
+      <div className="absolute inset-0 pointer-events-none opacity-[0.05]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='50' height='50' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z' fill='%23b8863c'/%3E%3C/svg%3E")`,
+          backgroundSize: '70px 70px',
+        }}
+      />
       {/* ─── HERO ─── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#1a120b] via-[#2a1a0e] to-[#1a0f08] -mt-[95px]">
         <div className="absolute inset-0 opacity-[0.04]">
@@ -160,10 +186,10 @@ export default function CustomerProductsPage() {
             </p>
           </div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#faf6f0] to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#f0e6d4] to-transparent" />
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 relative z-10">
 
         {/* ─── BREADCRUMB ─── */}
         <div className="flex items-center gap-2 text-xs text-gray-400 mb-6">
@@ -180,45 +206,37 @@ export default function CustomerProductsPage() {
               backgroundSize: '30px 30px',
             }}
           />
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-400" />
+          
+          {/* Menggunakan Grid Sistem: 10 Kolom di Mobile, Flexbox di Desktop */}
+          <div className="grid grid-cols-10 gap-2 sm:flex sm:flex-row sm:gap-3 items-center">
+            
+            {/* Input Pencarian (Membesat 7 Kolom / 70% di Mobile) */}
+            <div className="relative col-span-7 sm:flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 h-4 text-amber-400" />
               <input
                 type="text"
                 placeholder="Cari produk..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-amber-900/20 border border-amber-700/40 rounded-xl text-sm text-amber-100 placeholder:text-amber-400/40 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all"
+                className="w-full pl-8 sm:pl-10 pr-2 sm:pr-4 py-2.5 bg-amber-900/20 border border-amber-700/40 rounded-xl text-xs sm:text-sm text-amber-100 placeholder:text-amber-400/40 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all"
               />
             </div>
-            <div className="flex gap-2">
-              <div className="relative">
-                <select
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value)}
-                  className="px-4 py-2.5 bg-amber-900/20 border border-amber-700/40 rounded-xl text-sm text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all appearance-none cursor-pointer pr-8"
-                >
-                  <option value="terbaru">Terbaru</option>
-                  <option value="termurah">Termurah</option>
-                  <option value="termahal">Termahal</option>
-                  <option value="rating">Rating Tertinggi</option>
-                </select>
-                <svg width="10" height="10" viewBox="0 0 16 16" fill="none" className="absolute right-3 top-1/2 -translate-y-1/2 text-amber-500 pointer-events-none">
-                  <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-                </svg>
-              </div>
-              <Link
-                href="/customer/cart"
-                className="relative inline-flex items-center gap-2 px-4 py-2.5 bg-amber-700 hover:bg-amber-600 text-white rounded-xl transition-all shadow-sm text-sm font-medium"
+            
+            {/* Dropdown Urutan (Mengecil 3 Kolom / 30% di Mobile) */}
+            <div className="relative col-span-3 sm:shrink-0">
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+                className="w-full pl-2 sm:pl-4 pr-6 sm:pr-8 py-2.5 bg-amber-900/20 border border-amber-700/40 rounded-xl text-xs sm:text-sm text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/50 transition-all appearance-none cursor-pointer text-center sm:text-left"
               >
-                <ShoppingCart className="w-4 h-4" />
-                <span className="hidden sm:inline">Keranjang</span>
-                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-md ring-2 ring-white">
-                    {cartCount}
-                  </span>
-                )}
-              </Link>
+                <option value="terbaru">Terbaru</option>
+                <option value="termurah">Termurah</option>
+                <option value="termahal">Termahal</option>
+                <option value="rating">Rating</option>
+              </select>
+              <svg width="8" height="8" viewBox="0 0 16 16" fill="none" className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-amber-500 pointer-events-none">
+                <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" />
+              </svg>
             </div>
           </div>
 
@@ -228,11 +246,10 @@ export default function CustomerProductsPage() {
               <button
                 key={cat.slug}
                 onClick={() => setActiveCategory(cat.slug === activeCategory ? '' : cat.slug)}
-                className={`whitespace-nowrap px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
-                  activeCategory === cat.slug
-                    ? 'bg-amber-700 text-white border-amber-700 shadow-sm'
-                    : 'bg-amber-900/20 text-amber-100/60 border-amber-700/40 hover:border-amber-500 hover:text-amber-200'
-                }`}
+                className={`whitespace-nowrap px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all border ${activeCategory === cat.slug
+                  ? 'bg-amber-700 text-white border-amber-700 shadow-sm'
+                  : 'bg-amber-900/20 text-amber-100/60 border-amber-700/40 hover:border-amber-500 hover:text-amber-200'
+                  }`}
               >
                 {cat.name}
                 {cat.slug && activeCategory !== cat.slug && (
@@ -307,7 +324,7 @@ export default function CustomerProductsPage() {
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="w-12 h-px bg-amber-300/40" />
             <svg width="10" height="10" viewBox="0 0 16 16" fill="none" className="text-amber-400/40">
-              <path d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z" fill="currentColor"/>
+              <path d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z" fill="currentColor" />
             </svg>
             <div className="w-12 h-px bg-amber-300/40" />
           </div>

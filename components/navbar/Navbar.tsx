@@ -60,7 +60,7 @@ export default function Navbar() {
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     const userData = localStorage.getItem('user');
-    
+
     if (token && userData) {
       setIsAuthenticated(true);
       try {
@@ -94,7 +94,7 @@ export default function Navbar() {
         const data: Category[] = Array.isArray(result) ? result : (result.data || []);
         setCategories(data);
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   useEffect(() => {
@@ -190,11 +190,10 @@ export default function Navbar() {
 
         {/* Main navbar */}
         <nav
-          className={`transition-all duration-500 ${
-            isScrolled
+          className={`transition-all duration-500 ${isScrolled
               ? "bg-[#1c1008]/97 backdrop-blur-xl shadow-2xl shadow-black/30 border-b border-amber-800/20"
               : "bg-gradient-to-b from-[#1a0f08]/95 to-[#1a0f08]/80 backdrop-blur-sm"
-          }`}
+            }`}
         >
           {/* Batik top border */}
           <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-amber-600/60 to-transparent" />
@@ -234,11 +233,10 @@ export default function Navbar() {
                   >
                     <Link
                       href={link.href}
-                      className={`flex items-center gap-1 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 group ${
-                        isActive(link.href)
+                      className={`flex items-center gap-1 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 group ${isActive(link.href)
                           ? "text-amber-400"
                           : "text-amber-100/80 hover:text-amber-300"
-                      }`}
+                        }`}
                     >
                       <span className="relative">
                         {link.name}
@@ -283,12 +281,7 @@ export default function Navbar() {
 
               {/* Right actions */}
               <div className="flex items-center gap-2">
-                <button
-                  className="hidden md:flex p-2.5 text-amber-100/70 hover:text-amber-300 hover:bg-amber-900/30 rounded-lg transition-all duration-200"
-                  aria-label="Cari produk"
-                >
-                  <Search className="w-4.5 h-4.5" />
-                </button>
+                
 
                 <Link
                   href={isAuthenticated ? (userRole === 'ADMIN' ? '/admin/profile' : '/customer/profile') : "/sign-in"}
@@ -374,11 +367,10 @@ export default function Navbar() {
               <div key={link.name}>
                 <Link
                   href={link.href}
-                  className={`flex items-center justify-between px-5 py-3.5 text-sm font-medium transition-all ${
-                    isActive(link.href)
+                  className={`flex items-center justify-between px-5 py-3.5 text-sm font-medium transition-all ${isActive(link.href)
                       ? "text-amber-400 bg-amber-900/20 border-r-2 border-amber-500"
                       : "text-amber-100/80 hover:text-amber-300 hover:bg-amber-900/20"
-                  }`}
+                    }`}
                 >
                   {link.name}
                 </Link>
@@ -405,6 +397,12 @@ export default function Navbar() {
                   <div className="text-center text-amber-300/80 text-sm font-medium py-2">
                     {userName}
                   </div>
+                  <Link
+                    href={userRole === 'ADMIN' ? '/admin/profile' : '/customer/profile'}
+                    className="flex items-center justify-center gap-2 w-full border border-amber-700/40 text-amber-300 py-3 rounded-xl text-sm font-medium hover:bg-amber-900/20 transition"
+                  >
+                    <User className="w-4 h-4" /> Profil Saya
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="flex items-center justify-center gap-2 w-full border border-red-700/40 text-red-400 py-3 rounded-xl text-sm font-medium hover:bg-red-900/20 transition"

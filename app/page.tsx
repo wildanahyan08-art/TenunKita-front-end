@@ -651,7 +651,7 @@ export default function LandingPage() {
             ].map((cat) => (
               <Link
                 key={cat.name}
-                href={`/produk?kategori=${cat.name.toLowerCase().replace(" ", "-")}`}
+                href={`/customer/products`}
                 className="group relative overflow-hidden rounded-2xl aspect-[4/5] bg-gradient-to-br from-[#1a0f08] to-[#2a1a0e] border border-amber-800/30 hover:border-amber-600/50 transition-all duration-300"
               >
                 <Image

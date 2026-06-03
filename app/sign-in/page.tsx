@@ -66,8 +66,8 @@ export default function SignInPage() {
             <Link href="/" className="inline-flex items-center gap-3 mb-2 group">
               <div className="w-10 h-10 rounded-full bg-amber-600/20 border border-amber-500/30 flex items-center justify-center group-hover:bg-amber-600/30 transition-all duration-300">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-amber-500/70">
-                  <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" stroke="currentColor" strokeWidth="1" fill="currentColor" fillOpacity="0.3"/>
-                  <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1"/>
+                  <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" stroke="currentColor" strokeWidth="1" fill="currentColor" fillOpacity="0.3" />
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1" />
                 </svg>
               </div>
               <span className="font-serif text-2xl text-white tracking-wide group-hover:text-amber-200 transition-colors">TenunKita</span>
@@ -76,7 +76,7 @@ export default function SignInPage() {
             <div className="flex items-center gap-3 my-4">
               <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-600/40 to-transparent" />
               <svg width="10" height="10" viewBox="0 0 16 16" fill="none" className="text-amber-500/40 shrink-0">
-                <path d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z" fill="currentColor"/>
+                <path d="M8 0L10 6L16 8L10 10L8 16L6 10L0 8L6 6L8 0Z" fill="currentColor" />
               </svg>
               <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-600/40 to-transparent" />
             </div>
