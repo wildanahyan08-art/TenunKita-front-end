@@ -50,6 +50,23 @@ export interface Order {
   trackingNumber?: string;
 }
 
+export interface Promo {
+  id: number;
+  code: string;
+  description: string;
+  type: string;
+  value: number;
+  maxDiscount?: number;
+  minOrderAmount: number;
+  startDate: string;
+  endDate: string;
+  usageLimit: number;
+  usedCount: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface StatData {
   title: string;
   value: string | number;

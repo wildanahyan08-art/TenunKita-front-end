@@ -11,6 +11,7 @@ import {
   ShoppingBag,
   Wallet,
   MessageSquare,
+  Percent,
   LogOut,
   Menu,
   X,
@@ -30,6 +31,7 @@ const menuItems = [
   { name: 'Pelanggan', icon: Users, href: '/admin/customers' },
   { name: 'Pesanan', icon: ShoppingBag, href: '/admin/orders' },
   { name: 'Pembayaran', icon: Wallet, href: '/admin/payments' },
+  { name: 'Promo', icon: Percent, href: '/admin/promos' },
   { name: 'Kontak', icon: MessageSquare, href: '/admin/contacts' },
 ];
 
