@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
@@ -55,6 +55,7 @@ export default function CustomerCartPage() {
   } | null>(null);
   const [isApplyingPromo, setIsApplyingPromo] = useState(false);
   const [promoError, setPromoError] = useState<string | null>(null);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -159,20 +160,20 @@ export default function CustomerCartPage() {
     }
   };
 
-  const handleApplyPromo = async () => {
+  // Fungsi untuk apply promo - hanya menyimpan kode, tidak memanggil API
+  const handleApplyPromo = () => {
     if (!promoCode.trim()) {
       setPromoError("Masukkan kode promo");
       return;
     }
 
-    // Simpan promo code tanpa validasi backend
+    // Simpan kode promo tanpa validasi backend
     // Validasi akan dilakukan saat checkout
     setAppliedPromo({
       code: promoCode.toUpperCase(),
       discountAmount: 0, // Akan dihitung dari response checkout nanti
     });
     setPromoError(null);
-    }
   };
 
   const handleRemovePromo = () => {
@@ -182,59 +183,54 @@ export default function CustomerCartPage() {
   };
 
   const handleCheckout = async () => {
-    if (items.length === 0) {
-      setError("Keranjang Anda kosong. Tambahkan produk terlebih dahulu.");
-      return;
+  if (items.length === 0) {
+    setError("Keranjang Anda kosong. Tambahkan produk terlebih dahulu.");
+    return;
+  }
+
+  setIsCheckingOut(true);
+  setError(null);
+
+  const token = localStorage.getItem("access_token");
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://tenunkita-production.up.railway.app";
+
+  try {
+    const response = await fetch(`${API_URL}/orders/checkout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        promoCode: appliedPromo?.code || null,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      if (data.message && data.message.toLowerCase().includes("promo")) {
+        setAppliedPromo(null);
+        setPromoCode("");
+        setPromoError(data.message);
+        setIsCheckingOut(false);
+        return;
+      }
+      throw new Error(data.message || "Gagal melakukan checkout");
     }
 
-    const token = localStorage.getItem("access_token");
-    const API_URL =
-      process.env.NEXT_PUBLIC_API_URL ||
-      "https://tenunkita-production.up.railway.app";
-
-    try {
-      const response = await fetch(`${API_URL}/orders/checkout`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          promoCode: appliedPromo?.code || null,
-        }),
-      });
-
-      const data: PromoResponse = await response.json();
-
-      if (!response.ok) {
-        // Jika promo invalid, hapus promo dan tampilkan error
-        if (
-          data.message &&
-          data.message.toLowerCase().includes("promo")
-        ) {
-          setAppliedPromo(null);
-          setPromoCode("");
-          setPromoError(data.message);
-          setError(null);
-          return;
-        }
-        throw new Error(data.message || "Gagal melakukan checkout");
-      }
-
-      // Check if orderId exists before redirecting
-      if (!data.orderId) {
-        throw new Error("Respons checkout tidak valid");
-      }
-
-      // Checkout berhasil, redirect
-      router.push(`/customer/orders/${data.orderId}/success`);
-    } catch (err) {
-      const errorMsg =
-        err instanceof Error ? err.message : "Terjadi kesalahan saat checkout";
-      setError(errorMsg);
-      console.error("Checkout error:", err);
-    }
-  };
+    // Redirect ke halaman success payments
+    router.push(`/customer/payments/success?orderId=${data.orderId}`);
+  } catch (err) {
+    const errorMsg =
+      err instanceof Error ? err.message : "Terjadi kesalahan saat checkout";
+    setError(errorMsg);
+    console.error("Checkout error:", err);
+    setIsCheckingOut(false);
+  }
+};
 
   const subtotal = items.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
@@ -549,20 +545,8 @@ export default function CustomerCartPage() {
                     </span>
                   </div>
 
-                  {/* Discount */}
-                  {appliedPromo && (
-                    <div className="flex justify-between items-center mb-3 pb-3 border-b border-white/10">
-                      <div className="flex items-center gap-2">
-                        <Ticket className="w-3 h-3 text-amber-400" />
-                        <span className="text-amber-400 text-sm">
-                          Diskon {appliedPromo.code}
-                        </span>
-                      </div>
-                      <span className="text-amber-400 font-medium">
-                        -{formatPrice(discountAmount)}
-                      </span>
-                    </div>
-                  )}
+                  {/* Discount - Show after checkout (will be updated when checkout response comes) */}
+                  {/* Note: Discount amount will be shown in checkout success page */}
 
                   {/* Total */}
                   <div className="pt-3 mb-6">
@@ -574,17 +558,12 @@ export default function CustomerCartPage() {
                         {formatPrice(totalAmount)}
                       </span>
                     </div>
-                    {discountAmount > 0 && (
-                      <p className="text-[10px] text-white/40 italic mt-1">
-                        *Anda hemat {formatPrice(discountAmount)} dengan promo
-                      </p>
-                    )}
                     <p className="text-[10px] text-white/40 italic mt-1">
                       *Termasuk PPN dan jaminan keaslian sertifikat.
                     </p>
                   </div>
 
-                  {/* Promo Input */}
+                  {/* Promo Input - Only for entering code, not validating */}
                   <div className="mb-6 relative z-10">
                     {!appliedPromo ? (
                       <>
@@ -600,10 +579,10 @@ export default function CustomerCartPage() {
                           />
                           <button
                             onClick={handleApplyPromo}
-                            disabled={isApplyingPromo || !promoCode.trim()}
+                            disabled={!promoCode.trim()}
                             className="absolute right-1.5 top-1.5 bg-amber-600 text-white text-[10px] px-3.5 py-1.5 rounded-lg font-bold hover:bg-amber-500 transition-colors uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            {isApplyingPromo ? "..." : "Apply"}
+                            Apply
                           </button>
                         </div>
                         {promoError && (
@@ -622,7 +601,7 @@ export default function CustomerCartPage() {
                               {appliedPromo.code}
                             </p>
                             <p className="text-[10px] text-white/50">
-                              Diskon {formatPrice(discountAmount)}
+                              Kode promo akan berlaku saat checkout
                             </p>
                           </div>
                         </div>
@@ -638,13 +617,22 @@ export default function CustomerCartPage() {
 
                   <button
                     onClick={handleCheckout}
-                    disabled={items.length === 0}
+                    disabled={items.length === 0 || isCheckingOut}
                     className="w-full bg-amber-700 hover:bg-amber-600 disabled:bg-amber-800/50 text-white py-4 rounded-xl flex items-center justify-center gap-3 transition-all shadow-lg font-bold disabled:cursor-not-allowed relative z-10"
                   >
-                    <span className="tracking-wider uppercase">
-                      Lanjutkan Pembayaran
-                    </span>
-                    <ChevronRight className="w-5 h-5" />
+                    {isCheckingOut ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>Memproses...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="tracking-wider uppercase">
+                          Lanjutkan Pembayaran
+                        </span>
+                        <ChevronRight className="w-5 h-5" />
+                      </>
+                    )}
                   </button>
 
                   {/* Payment Icons */}

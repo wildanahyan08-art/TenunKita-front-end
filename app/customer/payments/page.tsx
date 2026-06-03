@@ -295,18 +295,7 @@ function UploadFormContent() {
               </>
             )}
           </button>
-          <button
-            type="button"
-            onClick={handleDownloadReceipt}
-            disabled={isDownloading}
-            className="w-full sm:w-auto px-6 py-3 bg-amber-800 hover:bg-amber-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-all shadow-md flex items-center justify-center gap-2"
-          >
-            {isDownloading ? (
-              <><Loader2 className="w-4 h-4 animate-spin" /> Mengunduh...</>
-            ) : (
-              <><Download className="w-4 h-4" /> Unduh Struk</>
-            )}
-          </button>
+          
           <Link
             href="/customer/orders"
             className="w-full sm:w-auto px-6 py-3 border border-amber-200 text-amber-700 hover:bg-amber-50 rounded-xl font-medium transition-all text-center flex items-center justify-center gap-2"
